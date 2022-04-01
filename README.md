@@ -11,10 +11,10 @@ Here are the major sections of a bicep file. This is also the recommended order 
 5. [Outputs](README.md#5-outputs)
 
 # 1. targetScope
-- You can only have 1 targetScope entry at the top of your file
+- You can only have 1 `targetScope` entry at the top of your file
 - It can be set to 1 of 4 options, all listed below
 - This specifies the level at which all of the resources in this Bicep file will be deployed
-- This line is optional.  If you omit it, the default value of 'resourceGroup' is used
+- This line is optional.  If you omit it, the default value of `resourceGroup` is used
 
 ```bicep
 targetScope = 'resourceGroup'
@@ -39,7 +39,7 @@ param myParameter3 string = 'default Value'
 - Decorators are placed directly above the parameter, you can use more than one decorator for each parameter
 - It's good practice to specify the min and max character length for parameters that control resource naming. These limitations help avoid errors later during deployment
 - For integers you can specify min and max values, instead
-- It's good practice to provide descriptions for all of your parameters. Try to make them helpful, and provide any important information about what the template needs the parameter values to be
+- It's good practice to provide descriptions for all of your parameters. Try to make them helpful
 - The `@allowed()` decorator can be used to provide allowed values in an array. If the value doesn't match, then the deployment fails
 
 ```bicep
@@ -115,15 +115,14 @@ param exampleObjectParameter object = {
 ### String (single-line)
 - Bicep uses single quotes for single-line strings
 - All Unicode characters with code points between 0 and 10FFFF (both inclusive) are allowed
-
-Escape Characters:
-- Use `\\` for `\`
-- Use `\'` for `'` (single quote)
-- Use `\n` for line feed (LF)
-- Use `\r` for carriage return (CR)
-- Use `\t` for tab
-- Use `\u{###}` for unicode characters
-- Use `\$` for `$` (dollar sign) (this is only needed if you must type `${` and you're NOT using interpolation)
+- Escape Characters:
+  - Use `\\` for `\`
+  - Use `\'` for `'` (single quote)
+  - Use `\n` for line feed (LF)
+  - Use `\r` for carriage return (CR)
+  - Use `\t` for tab
+  - Use `\u{###}` for unicode characters
+  - Use `\$` for `$` (dollar sign) (this is only needed if you must type `${` and you're NOT using interpolation)
 
 ```bicep
 param exampleStringParameter string = 'example string'
@@ -180,9 +179,11 @@ var myVariable1 = 'some value for the var'
 ```bicep
 resource myResource1 'Microsoft.Network/virtualWans@2021-02-01' = {
   name: 'resourceName'
-  location: resourceGroup().location
-  // Even though explicit dependencies are sometimes required, the need for them is rare. In most cases, you can use a symbolic name to imply the dependency between resources
-  // If you find yourself setting explicit dependencies, you should consider if there's a way to remove it
+  location: 'location'
+
+  // Even though explicit dependencies are sometimes required, the need for them is rare
+  // In most cases, you can use a symbolic name to imply the dependency between resources
+  // If you are setting explicit dependencies, you should consider if there's a way to remove it
   dependsOn: [
     myResource2
     myResource3
@@ -350,29 +351,24 @@ module myModule2 '../someFile2.bicep' = {
 ```
 
 How to use a Module (Bicep file) in a Registry
-- br: is the schema name for a Bicep Registry
-- Optionally, you can configure Bicep Registry 'aliases' in your bicepconfig.json file and use the alias instead of the full registry path.  See this for [more info](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-config-modules)
+- `br:` is the schema name for a Bicep Registry
+- Optionally, you can configure Bicep Registry 'aliases' in your `bicepconfig.json` file and use the alias instead of the full registry path.  See this for [more info](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-config-modules)
 
 ```bicep
 module myModule3 'br:exampleregistry.azurecr.io/bicep/modules/storage:v1' = {
-}
 ```
 
 How to conditionally deploy a Module
 
 ```bicep
 module myModule4 '../someFile4.bicep' = if (condition) {
-}
 ```
 
 # 5. Outputs
-Use Outputs when you need to return certain values from a deployment
-
-Make sure you don't create outputs for sensitive data. Output values can be accessed by anyone who has access to the deployment history. They're NOT appropriate for handling secrets
-
-Instead of passing property values around through outputs, use the `existing` keyword to look up properties of resources that already exist. It's a best practice to look up keys from other resources in this way instead of passing them around through outputs. You'll always get the most up-to-date data
-
-Outputs must set a specific data type
+- Use Outputs when you need to return certain values from a deployment
+- Make sure you don't create outputs for sensitive data. Output values can be accessed by anyone who can view the deployment history. They're NOT appropriate for handling secrets
+- Instead of passing property values around through outputs, use the `existing` keyword to look up properties of resources that already exist. It's a best practice to look up keys from other resources in this way instead of passing them around through outputs. You'll always get the most up-to-date data
+- Outputs must set a specific data type
 
 ```bicep
 output myOutput1 int = myResource4.properties.maxNumberOfRecordSets
@@ -409,11 +405,11 @@ resource myResource4 'Microsoft.Network/dnszones@2018-05-01' = if (condition) {
 Note 1:
 - ARM evaluates the expressions used inside resource properties before it evaluates the conditional on the resource itself
 - Example:
-  - ResourceB is trying to reference the symbolicName of ResourceA
+  - ResourceB has properties that are referencing the symbolicName of ResourceA
   - ResourceA has a condition where it will not be deployed
   - ResourceB's references to ResourceA are now invalid, and the deployment will fail with a 'ResourceNotFound' error
   - This will still fail even if ResourceB has the same condition applied to it as ResourceA
-- Use the ternary operator as a workaround for this example
+- Use the ternary operator on the properties of ResourceB as a workaround
 
 Note 2:
 - You can't define two resources with the same name in the same Bicep file and then try to only deploy one of them based on a condition
@@ -421,11 +417,9 @@ Note 2:
 - If you have several resources, all with the same condition for deployment, consider using Bicep Modules. You can create a Module that deploys all the resources, and then put a condition on the module declaration in your main Bicep file.
 
 # Loops
-To deploy more than one instance of an item, add the `for` expression
-
-Loops are supported on: Variables, Resources, Modules, Properties, Outputs
-
-Optionally, you can use the `batchSize` decorator to specify how many can be created at one time
+- To deploy more than one instance of an item, add the `for` expression
+- Loops are supported on: Variables, Resources, Modules, Properties, Outputs
+- Optionally, you can use the `@batchSize()` decorator to specify how many can be created at one time
 
 Example 1: Integer Index
 
@@ -502,7 +496,7 @@ var fullName = '${lastName}, ${firstName}'
 blah ? blah : blah
 ```
 
-## Examples of getting info from ARM Resource Provider
+## Examples of getting info from ARM Resource Provider (WIP)
 
 PowerShell:
 ```powershell
