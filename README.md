@@ -307,7 +307,7 @@ resource myExtensionResource2 'Microsoft.Authorization/roleAssignments@2020-10-0
 ```
 
 Example 3: Deploy an Extension Resource to a specific resource using the `scope` parameter
-- This example creates a Role Assignment on the resource using the symbolic name 'myResource3'
+- This example creates a Role Assignment on the resource which has the symbolic name 'myResource3'
 
 ```bicep
 resource myExtensionResource3 'Microsoft.Authorization/roleAssignments@2020-10-01-preview' = {
@@ -356,12 +356,6 @@ How to use a Module (Bicep file) in a Registry
 
 ```bicep
 module myModule3 'br:exampleregistry.azurecr.io/bicep/modules/storage:v1' = {
-```
-
-How to conditionally deploy a Module
-
-```bicep
-module myModule4 '../someFile4.bicep' = if (condition) {
 ```
 
 # 5. Outputs
