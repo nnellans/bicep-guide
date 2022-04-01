@@ -27,9 +27,9 @@ Parameters are for values that will change/vary between different deployments
 
 Each Parameter must be set to one of the supported Data Types (see below)
 
-Optionally, you can use = to set a default value for the Parameter
+Optionally, you can use `=` to set a default value for the Parameter
 
-The default value can use expressions, but it can NOT use the 'reference' or 'list' functions
+The default value can use expressions, but it can NOT use the `reference` or `list` functions
 
 ```bicep
 param myParameter1 string
@@ -291,7 +291,7 @@ resource secondChildSymbolicName 'Microsoft.Storage/storageAccounts/fileServices
 
 ## Extension Resources:
 - An extension resource is meant to modify another resource
-- Full list of extension resources: https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/extension-resource-types
+- A full list of extension resources can be [found here](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/extension-resource-types)
 
 Example 1: By default, an extension resource will target what you have in your `targetScope` parameter
 
@@ -348,8 +348,11 @@ module myModule1 '../someFile1.bicep' = {
 }
 ```
 
-// How to deploy a Module to a different scope using the 'scope' parameter
-// This is important, this is how you can deploy resources to a scope that is different than your 'targetScope' parameter
+How to deploy a Module to a different scope using the `scope` parameter
+
+This is important, this is how you can deploy resources to a scope that is different than your 'targetScope' parameter
+
+```bicep
 module myModule2 '../someFile2.bicep' = {
   name: 'myModule2Deployment'
   scope: 'anotherSubscription'
@@ -359,127 +362,171 @@ module myModule2 '../someFile2.bicep' = {
     myModule2Param3: 'something'
   }
 }
+```
 
-// How to use a Module (Bicep file) in a Registry
-// br: is the schema name for a Bicep Registry
-// Optionally, you can configure Bicep Registry 'aliases' in your bicepconfig.json file and use the alias instead of the full registry path.  See this for more info:  https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-config-modules
+How to use a Module (Bicep file) in a Registry
+- br: is the schema name for a Bicep Registry
+- Optionally, you can configure Bicep Registry 'aliases' in your bicepconfig.json file and use the alias instead of the full registry path.  See this for [more info](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-config-modules)
+
+```bicep
 module myModule3 'br:exampleregistry.azurecr.io/bicep/modules/storage:v1' = {
 }
+```
 
-// How to conditionally deploy a Module
+How to conditionally deploy a Module
+
+```bicep
 module myModule4 '../someFile4.bicep' = if (condition) {
 }
+```
 
+# 5. OUTPUTS
+Use Outputs when you need to return certain values from a deployment
 
-//----------------------
-// 5. OUTPUTS
-//----------------------
-// Use Outputs when you need to return certain values from a deployment
-// Make sure you don't create outputs for sensitive data. Output values can be accessed by anyone who has access to the deployment history. They're NOT appropriate for handling secrets
-// Instead of passing property values around through outputs, use the 'existing' keyword to look up properties of resources that already exist. It's a best practice to look up keys from other resources in this way instead of passing them around through outputs. You'll always get the most up-to-date data
-// Outputs must set a specific data type
+Make sure you don't create outputs for sensitive data. Output values can be accessed by anyone who has access to the deployment history. They're NOT appropriate for handling secrets
 
+Instead of passing property values around through outputs, use the `existing` keyword to look up properties of resources that already exist. It's a best practice to look up keys from other resources in this way instead of passing them around through outputs. You'll always get the most up-to-date data
+
+Outputs must set a specific data type
+
+```bicep
 output myOutput1 int = myResource4.properties.maxNumberOfRecordSets
+```
 
-// If the property being returned has a hyphen in the name, you can NOT use the dot notation as shown above.  Instead, you must use brackets around the property
+If the property being returned has a hyphen in the name, you can NOT use the dot notation as shown above.  Instead, you must use brackets around the property
+
+```bicep
 output myOutput2 string = myResource1['some-property']
+```
 
-// You can programmatically grab outputs from successful deployments
-// PowerShell Az Module:  (Get-AzResourceGroupDeployment -ResourceGroupName <resourceGroupName> -Name <deploymentName>).Outputs.myOutput1.value
-// Az CLI:  az deployment group show -g <resourceGroupName> -n <deploymentName> --query properties.outputs.myOutput2.value
+You can programmatically grab outputs from successful deployments
 
+PowerShell:
+```powershell
+(Get-AzResourceGroupDeployment -ResourceGroupName <resourceGroupName> -Name <deploymentName>).Outputs.myOutput1.value
+```
 
-//----------------------
-// CONDITIONS / IF
-//----------------------
-// You can deploy a resource only if a certain condition is met, otherwise the resource will not be deployed
+Azure CLI
+```
+az deployment group show -g <resourceGroupName> -n <deploymentName> --query properties.outputs.myOutput2.value
+```
+
+# Conditions (If)
+You can deploy a resource only if a certain condition is met, otherwise the resource will not be deployed
+
+```bicep
 resource myResource4 'Microsoft.Network/dnszones@2018-05-01' = if (condition) {
   name: 'myZone'
   location: 'global'
 }
+```
 
-// Note 1:
-// ARM evaluates the expressions used in resource properties before it evaluates the conditional on the resource itself.
-// Example: ResourceB is trying to reference the symbolicName of ResourceA. But, ResourceA has a condition where it will not be deployed. Now, ResourceB's references to ResourceA are invalid, and the deployment will fail with a ResourceNotFound error.
-// Use the ternary operator on those references in ResourceB as a workaround
+Note 1:
+- ARM evaluates the expressions used inside resource properties before it evaluates the conditional on the resource itself
+- Example:
+  - ResourceB is trying to reference the symbolicName of ResourceA
+  - ResourceA has a condition where it will not be deployed
+  - ResourceB's references to ResourceA are now invalid, and the deployment will fail with a 'ResourceNotFound' error
+- Use the ternary operator as a workaround for this example
 
-// Note 2:
-// You can't define two resources with the same name in the same Bicep file and then conditionally deploy only one of them. The deployment will fail, because Resource Manager views this as a conflict.
-// If you have several resources, all with the same condition for deployment, consider using Bicep modules. You can create a module that deploys all the resources, and then put a condition on the module declaration in your main Bicep file.
+Note 2:
+- You can't define two resources with the same name in the same Bicep file and then try to only deploy one of them based on a condition
+- The deployment will fail, because Resource Manager views this as a conflict
+- If you have several resources, all with the same condition for deployment, consider using Bicep Modules. You can create a Module that deploys all the resources, and then put a condition on the module declaration in your main Bicep file.
 
+# Loops
+To deploy more than one instance of an item, add the `for` expression
 
-//----------------------
-// LOOPS
-//----------------------
-// To deploy more than one instance of an item, add the 'for' expression
-// Loops are supported on: Variables, Resources, Modules, Properties, Outputs
-// Optionally, you can use the 'batchSize' decorator to specify how many can be created at one time
+Loops are supported on: Variables, Resources, Modules, Properties, Outputs
 
-// Example 1: Integer Index
+Optionally, you can use the `batchSize` decorator to specify how many can be created at one time
+
+Example 1: Integer Index
+
+```bicep
 @batchSize(int)
 resource myResource5 'Microsoft.Storage/storageAccounts@2021-08-01' = [for i in range(int1,int2): {
   name:  'something-${i}'
 }]
+```
 
-// Example 2: Array elements
+Example 2: Array elements
+
+```bicep
 @batchSize(int)
 resource myResource6 'Microsoft.Storage/storageAccounts@2021-08-01' = [for item in array: {
   name: item.property1
 }]
+```
 
-// Example 3: Array and Index
+Example 3: Array and Index
+
+```bicep
 @batchSize(int)
 resource myResource7 'Microsoft.Storage/storageAccounts@2021-08-01' = [for (item, i) in array: {
   name: 'something-${i}'
   location: item.property1
 }]
+```
 
-// Example 4: Complex Object / Dictionary
+Example 4: Complex Object / Dictionary
+
+```bicep
 @batchSize(int)
 resource myResource8 'Microsoft.Storage/storageAccounts@2021-08-01' = [for item in items(object): {
   name: item.value.property1
 }]
+```
 
-// How to create a Resource with a loop and a condition
+How to create a Resource with a loop and a condition
+
+```bicep
 @batchSize(int)
 resource myResource9 'Microsoft.Storage/storageAccounts@2021-08-01' = [for item in array: if(item.property1 == true) {
   name: item.property2
 }]
+```
 
+# Bicep Comments
 
-
-//----------------------
-// BICEP COMMENTS
-//----------------------
-
+```bicep
 // This is a single-line comment
 
 /*
 This is a 
 multi-line comment
 */
+```
 
+# Other
 
-//----------------------
-// OTHER
-//----------------------
+## Interpolation
+- All strings in Bicep support interpolation
+- To inject an expression surround it by `${` and `}`
 
-//---- Interpolation
-// All strings in Bicep support interpolation
-// To inject an expression surround it by ${ and }
+```bicep
 var lastName = 'Anderson'
 var firstName = 'Thomas'
 var fullName = '${lastName}, ${firstName}'
+```
 
-// ternary operator
-// blah ? blah : blah
+## Ternary Operator
 
-// Get info from ARM Resource Provider
-// ((Get-AzResourceProvider -ProviderNamespace Microsoft.Batch).ResourceTypes | Where-Object ResourceTypeName -eq batchAccounts).Locations
-// az provider show --namespace Microsoft.Batch --query "resourceTypes[?resourceType=='batchAccounts'].locations | [0]" --out table
+```bicep
+blah ? blah : blah
+```
 
+## Getting info from ARM Resource Provider
 
-//----------------------
-// LINKS
-//----------------------
-// Bicep Resource Reference:  https://docs.microsoft.com/en-us/azure/templates/
+PowerShell
+```powershell
+((Get-AzResourceProvider -ProviderNamespace Microsoft.Batch).ResourceTypes | Where-Object ResourceTypeName -eq batchAccounts).Locations
+```
+
+Azure CLI
+```
+az provider show --namespace Microsoft.Batch --query "resourceTypes[?resourceType=='batchAccounts'].locations | [0]" --out table
+```
+
+# Links
+- [Bicep Resource Reference](https://docs.microsoft.com/en-us/azure/templates/)
