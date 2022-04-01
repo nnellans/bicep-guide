@@ -1,19 +1,20 @@
+Warning: This is not a very beginner-friendly guide.  Think of this more like an advanced cheat sheet, of sorts.  I went through most of the Microsoft Bicep documentation and captured any notes that I felt were relevant or important.  Then, I organized them into the README file you see here.  Some of it is still a work in progress, and I will update this over time.
+
+If you are new to Bicep, then I would suggest going through the Microsoft Docs or doing a couple Microsoft Learn courses first.
+
 # Bicep File Structure
 Here are the major sections of a bicep file. This is also the recommended order in which they should appear
-1. targetScope
-2. Parameters
-3. Variables
-4. Resources and/or Modules
-5. Outputs
+1. [targetScope](README.md#1-targetscope)
+2. [Parameters](README.md#2-parameters)
+3. [Variables](README.md#3-variables)
+4. [Resources](README.md#4-resources) and/or [Modules](README.md#4-modules)
+5. [Outputs](README.md#5-outputs)
 
 # 1. targetScope
-You can only have 1 targetScope entry at the top of your file
-
-It can be set to 1 of 4 options, all listed below
-
-This specifies the level at which all of the resources in this Bicep file will be deployed 
-
-This line is optional.  If you omit it, the default value of 'resourceGroup' is used
+- You can only have 1 targetScope entry at the top of your file
+- It can be set to 1 of 4 options, all listed below
+- This specifies the level at which all of the resources in this Bicep file will be deployed
+- This line is optional.  If you omit it, the default value of 'resourceGroup' is used
 
 ```bicep
 targetScope = 'resourceGroup'
@@ -23,13 +24,10 @@ targetScope = 'tenant'
 ```
 
 # 2. Parameters
-Parameters are for values that will change/vary between different deployments
-
-Each Parameter must be set to one of the supported Data Types (see below)
-
-Optionally, you can use `=` to set a default value for the Parameter
-
-The default value can use expressions, but it can NOT use the `reference` or `list` functions
+- Parameters are for values that will change/vary between different deployments
+- Each Parameter must be set to one of the supported Data Types (see below)
+- Optionally, you can use `=` to set a default value for the Parameter
+- The default value can use expressions, but it can NOT use the `reference` or `list` functions
 
 ```bicep
 param myParameter1 string
@@ -38,15 +36,11 @@ param myParameter3 string = 'default Value'
 ```
 
 ## Parameter Decorators
-Decorators are placed directly above the parameter, you can use more than one decorator for each parameter
-
-It's good practice to specify the min and max character length for parameters that control resource naming. These limitations help avoid errors later during deployment
-
-For integers you can specify min and max values, instead
-
-It's good practice to provide descriptions for all of your parameters. Try to make them helpful, and provide any important information about what the template needs the parameter values to be
-
-The `@allowed()` decorator can be used to provide allowed values in an array. If the value doesn't match, then the deployment fails
+- Decorators are placed directly above the parameter, you can use more than one decorator for each parameter
+- It's good practice to specify the min and max character length for parameters that control resource naming. These limitations help avoid errors later during deployment
+- For integers you can specify min and max values, instead
+- It's good practice to provide descriptions for all of your parameters. Try to make them helpful, and provide any important information about what the template needs the parameter values to be
+- The `@allowed()` decorator can be used to provide allowed values in an array. If the value doesn't match, then the deployment fails
 
 ```bicep
 @minLength(1)
@@ -167,27 +161,21 @@ param exampleSecureObjectParameter object
 param exampleSecureStringParameter string
 ```
 
-# 3. VARIABLES
-Instead of embedding complex expressions directly into resource properties, use variables to contain the expressions
-
-This approach makes your Bicep file easier to read and understand. It avoids cluttering your resource definitions with logic
-
-Use camel case for variable names, such as `myVariableName`
-
-When you define a variable, the data type isn't needed. Variables infer the type from the resolved value
-
-The value of the variable can use all expressions, including the `reference` or `list` functions
+# 3. Variables
+- Instead of embedding complex expressions directly into resource properties, use variables to contain the expressions
+- This approach makes your Bicep file easier to read and understand. It avoids cluttering your resource definitions with logic
+- Use camel case for variable names, such as `myVariableName`
+- When you define a variable, the data type isn't needed. Variables infer the type from the resolved value
+- The value of the variable can use all expressions, including the `reference` or `list` functions
 
 ```bicep
 var myVariable1 = 'some value for the var'
 ```
 
-# 4. RESOURCES
-It's a good idea to use a recent API version for each resource. New features in Azure services are sometimes available only in newer API versions
-
-When possible, avoid using the `reference` and `resourceId` functions in your Bicep file. You can access any resource in Bicep by using the symbolic name. By using the symbolic name, you create an implicit dependency between resources
-
-You can still create explicit dependencies by using a `dependsOn` block, but see notes below about this
+# 4. Resources
+- It's a good idea to use a recent API version for each resource. New features in Azure services are sometimes available only in newer API versions
+- When possible, avoid using the `reference` and `resourceId` functions in your Bicep file. You can access any resource in Bicep by using the symbolic name. By using the symbolic name, you create an implicit dependency between resources
+- You can still create explicit dependencies by using a `dependsOn` block, but see notes below about this
 
 ```bicep
 resource myResource1 'Microsoft.Network/virtualWans@2021-02-01' = {
@@ -330,12 +318,10 @@ resource myExtensionResource3 'Microsoft.Authorization/roleAssignments@2020-10-0
   }
 }
 ```
-# 4. MODULES
-A module is just a Bicep file that is deployed from another Bicep file, allowing you to reuse code
-
-The module (Bicep file) can be a local file or stored in a Registry
-
-The `name` property is required. It becomes the name of the nested deployment resource in the generated ARM template
+# 4. Modules
+- A module is just a Bicep file that is deployed from another Bicep file, allowing you to reuse code
+- The module (Bicep file) can be a local file or stored in a Registry
+- The `name` property is required. It becomes the name of the nested deployment resource in the generated ARM template
 
 ```bicep
 module myModule1 '../someFile1.bicep' = {
@@ -349,8 +335,7 @@ module myModule1 '../someFile1.bicep' = {
 ```
 
 How to deploy a Module to a different scope using the `scope` parameter
-
-This is important, this is how you can deploy resources to a scope that is different than your 'targetScope' parameter
+> This is important, this is how you can deploy resources to a scope that is different than your 'targetScope' parameter
 
 ```bicep
 module myModule2 '../someFile2.bicep' = {
@@ -380,7 +365,7 @@ module myModule4 '../someFile4.bicep' = if (condition) {
 }
 ```
 
-# 5. OUTPUTS
+# 5. Outputs
 Use Outputs when you need to return certain values from a deployment
 
 Make sure you don't create outputs for sensitive data. Output values can be accessed by anyone who has access to the deployment history. They're NOT appropriate for handling secrets
@@ -406,7 +391,7 @@ PowerShell:
 (Get-AzResourceGroupDeployment -ResourceGroupName <resourceGroupName> -Name <deploymentName>).Outputs.myOutput1.value
 ```
 
-Azure CLI
+Azure CLI:
 ```
 az deployment group show -g <resourceGroupName> -n <deploymentName> --query properties.outputs.myOutput2.value
 ```
@@ -427,6 +412,7 @@ Note 1:
   - ResourceB is trying to reference the symbolicName of ResourceA
   - ResourceA has a condition where it will not be deployed
   - ResourceB's references to ResourceA are now invalid, and the deployment will fail with a 'ResourceNotFound' error
+  - This will still fail even if ResourceB has the same condition applied to it as ResourceA
 - Use the ternary operator as a workaround for this example
 
 Note 2:
@@ -510,20 +496,20 @@ var firstName = 'Thomas'
 var fullName = '${lastName}, ${firstName}'
 ```
 
-## Ternary Operator
+## Ternary Operator (WIP)
 
 ```bicep
 blah ? blah : blah
 ```
 
-## Getting info from ARM Resource Provider
+## Examples of getting info from ARM Resource Provider
 
-PowerShell
+PowerShell:
 ```powershell
 ((Get-AzResourceProvider -ProviderNamespace Microsoft.Batch).ResourceTypes | Where-Object ResourceTypeName -eq batchAccounts).Locations
 ```
 
-Azure CLI
+Azure CLI:
 ```
 az provider show --namespace Microsoft.Batch --query "resourceTypes[?resourceType=='batchAccounts'].locations | [0]" --out table
 ```
