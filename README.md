@@ -2,6 +2,8 @@ Warning: This is not a very beginner-friendly guide.  Think of this more like an
 
 If you are new to Bicep, then I would suggest going through the Microsoft Docs or doing a couple Microsoft Learn courses first.
 
+Here is a link to my own [Bicep Deployment Series](https://www.nathannellans.com/post/all-about-bicep-deploying-bicep-files) which goes over the various nuances of deploying Bicep files.
+
 # Bicep File Structure
 Here are the major sections of a bicep file. This is also the recommended order in which they should appear
 1. [targetScope](README.md#1-targetscope)
@@ -36,7 +38,8 @@ param myParameter3 string = 'default Value'
 ```
 
 ## Parameter Decorators
-- Decorators are placed directly above the parameter, you can use more than one decorator for each parameter
+- Decorators are placed directly above the parameter
+- You can use more than one decorator for each parameter
 - It's good practice to specify the min and max character length for parameters that control resource naming. These limitations help avoid errors later during deployment
 - For integers you can specify min and max values, instead
 - It's good practice to provide descriptions for all of your parameters. Try to make them helpful
@@ -61,10 +64,10 @@ param myParameter5 int
 Bicep data types:  array, bool, int, object, secureObject, string, secureString
 
 ### Array
-- Arrays use brackets:  `[ ]`
+- Arrays use square brackets:  `[ ]`
 - Bicep does NOT support single-line arrays yet
 - Do NOT use commas between values
-- Each item is represented by the 'any' type, so you can have an array where each item is the same data type, or an array that holds different data types
+- The data types in an array do NOT have to match, as each item is represented by the 'any' type
 - Bicep arrays are zero-based, so `exampleArrayParameter[0] = 'value1'`
 
 ```bicep
@@ -95,7 +98,6 @@ param exampleIntParameter int = 1200
 - Objects use braces / curly brackets:  `{ }`
 - Bicep does NOT support single-line objects yet
 - Do NOT use commas between properties
-- Each property of the Object consists of a key and value separated by a colon
 - Each property of the Object can be of any type
 - Optionally, if the key contains special characters, you can enclose the key in single quotes
 - You can use a period to access values, so `exampleObjectParameter.key2 = true`
@@ -149,7 +151,7 @@ this
 ### secureObject and secureString
 - Just add the `@secure()` decorator before your Object or String parameter
 - The value is not saved to the deployment history and is not logged
-- Make sure you use this in a location that expects a secure value, for example Tag values are stored in plain text, so do not use a secureString in a Tag
+- Make sure you use this parameter in a location that expects a secure value, for example Tag values are stored in plain text, so do not use a secureString parameter in a Tag
 - Since these are secure, do NOT set a default value, as that will be stored in code
 
 ```bicep
@@ -163,7 +165,6 @@ param exampleSecureStringParameter string
 # 3. Variables
 - Instead of embedding complex expressions directly into resource properties, use variables to contain the expressions
 - This approach makes your Bicep file easier to read and understand. It avoids cluttering your resource definitions with logic
-- Use camel case for variable names, such as `myVariableName`
 - When you define a variable, the data type isn't needed. Variables infer the type from the resolved value
 - The value of the variable can use all expressions, including the `reference` or `list` functions
 
@@ -213,8 +214,8 @@ resource myResource3 'Microsoft.Storage/storageAccounts@2019-06-01' existing = {
 
 ## Child Resources:
 - Child resources are resources that exist only within the context of another resource
-- Each 'parent' resource accepts only certain resource types as 'child' resources
-- There are different ways you can declare a child resource
+- Each 'parent' resource accepts only certain 'child' resources.  Check out the [Bicep Resource Reference](https://docs.microsoft.com/en-us/azure/templates/) for the supported parent/child relationships.
+- There are different ways you can declare a child resource:
 
 ### Method 1. Child resource included within the Parent resource
 - 'resourceType' for children can be the simple name `shares`, since the full resourceType path `Microsoft.Storage/storageAccounts/fileServices/shares` is assumed from the parent resource
@@ -243,8 +244,8 @@ resource parentSymbolicName 'Microsoft.Storage/storageAccounts@2021-04-01' = {
 
 ### Method 2. The Child resources are defined separately in their own top-level resource
 - The Child resource uses a `parent` parameter that points to the symbolic name of the parent resource
-- Useful if the Child resources are deployed in a different Bicep file than the parent resources
-- Useful if you want to use a loop on Child resources
+- Benefit over Method 1: allows you to define the Child resources in a different Bicep file than the Parent resources
+- Benefit over Method 1: allows you to use a loop on Child resources
 - The 'resourceType' for children must be the full resourceType path `Microsoft.Storage/storageAccounts/fileServices/shares`
 - The 'apiVersion' for children must be provided
 - The 'name' for children can be just the simple name `childName`, since the full name `parentName/childName` is assumed from the parent resource
@@ -259,7 +260,7 @@ resource childSymbolicName 'Microsoft.Storage/storageAccounts/fileServices@2021-
 ```
 
 ### Method 3. The Child resources are defined separately in their own top-level resource (same as above)
-- But, the Child resource does NOT use a `parent` parameter
+- At first glance, this looks the same as Method 2.  But, with Method 3 the Child resource does NOT use a `parent` parameter
 - The 'resourceType' for children must be the full resourceType path `Microsoft.Storage/storageAccounts/fileServices`
 - The 'apiVersion' for children must be provided
 - The 'name' for children must be the full name `parentName/childName`
@@ -353,6 +354,9 @@ module myModule2 '../someFile2.bicep' = {
 How to use a Module (Bicep file) in a Registry
 - `br:` is the schema name for a Bicep Registry
 - Optionally, you can configure Bicep Registry 'aliases' in your `bicepconfig.json` file and use the alias instead of the full registry path.  See this for [more info](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-config-modules)
+  - Starting with Bicep v0.5.6 there is a default alias called `public` which points at Microsoft's official registry of Bicep modules.
+  - An example would be:  `br/public:network/virtual-network:1.0`
+  - [Here is a link](https://github.com/Azure/bicep-registry-modules) to the official GitHub repo containing the current listing of modules.  Microsoft admits the registry is fairly barebones right now, as they are just getting started at the time of this writing.
 
 ```bicep
 module myModule3 'br:exampleregistry.azurecr.io/bicep/modules/storage:v1' = {
@@ -378,12 +382,12 @@ You can programmatically grab outputs from successful deployments
 
 PowerShell:
 ```powershell
-(Get-AzResourceGroupDeployment -ResourceGroupName <resourceGroupName> -Name <deploymentName>).Outputs.myOutput1.value
+(Get-AzResourceGroupDeployment -ResourceGroupName <rgName> -Name <deploymentName>).Outputs.myOutput1.value
 ```
 
 Azure CLI:
 ```
-az deployment group show -g <resourceGroupName> -n <deploymentName> --query properties.outputs.myOutput2.value
+az deployment group show -g <rgName> -n <deploymentName> --query properties.outputs.myOutput2.value
 ```
 
 # Conditions (If)
@@ -399,14 +403,14 @@ resource myResource4 'Microsoft.Network/dnszones@2018-05-01' = if (condition) {
 Note 1:
 - ARM evaluates the expressions used inside resource properties before it evaluates the conditional on the resource itself
 - Example:
-  - ResourceB has properties that are referencing the symbolicName of ResourceA
+  - ResourceB has properties which are referencing the symbolicName of ResourceA
   - ResourceA has a condition where it will not be deployed
   - ResourceB's references to ResourceA are now invalid, and the deployment will fail with a 'ResourceNotFound' error
-  - This will still fail even if ResourceB has the same condition applied to it as ResourceA
+  - This will fail even if ResourceB has the same condition applied to it as ResourceA
 - Use the ternary operator on the properties of ResourceB as a workaround
 
 Note 2:
-- You can't define two resources with the same name in the same Bicep file and then try to only deploy one of them based on a condition
+- You can't define two resources with the same name in the same Bicep file and then use a condition to only deploy one of them
 - The deployment will fail, because Resource Manager views this as a conflict
 - If you have several resources, all with the same condition for deployment, consider using Bicep Modules. You can create a Module that deploys all the resources, and then put a condition on the module declaration in your main Bicep file.
 
@@ -474,6 +478,10 @@ multi-line comment
 
 # Other
 
+## Functions
+
+Bicep has a large assortment of functions that can be used in your template.  Check out the [officials docs](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-functions) for more information about all of the available Functions and their instructions.
+
 ## Interpolation
 - All strings in Bicep support interpolation
 - To inject an expression surround it by `${` and `}`
@@ -484,11 +492,15 @@ var firstName = 'Thomas'
 var fullName = '${lastName}, ${firstName}'
 ```
 
-## Ternary Operator (WIP)
+## Ternary Operator
+
+The ternary operator is a way to embed an if/then/else statement inside the properties of a resource.
 
 ```bicep
-blah ? blah : blah
+condition ? valueIfTrue : valueIfFalse
 ```
+
+The true or false values can be of any data type: string, integer, boolean, object, array
 
 ## Examples of getting info from ARM Resource Provider (WIP)
 
@@ -504,3 +516,5 @@ az provider show --namespace Microsoft.Batch --query "resourceTypes[?resourceTyp
 
 # Links
 - [Bicep Resource Reference](https://docs.microsoft.com/en-us/azure/templates/)
+- [Bicep Functions](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-functions)
+- [Bicep Operators](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/operators)
