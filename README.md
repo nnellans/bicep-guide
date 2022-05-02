@@ -70,7 +70,7 @@ param myParameter5 int
 ```
 
 ## Bicep Data Types:
-Bicep data types:  array, bool, int, object, secureObject, string, secureString
+Bicep data types include:  array, bool, int, object, string (plus secureObject and secureString)
 
 ### Array
 - Arrays use square brackets:  `[ ]`
@@ -88,7 +88,7 @@ param exampleArrayParameter array = [
 ```
 
 ### Bool
-- Simply use either true or false with no quotation marks
+- Simply use either `true` or `false` with no quotation marks
 
 ```bicep
 param exampleBoolParameter bool = false
@@ -175,10 +175,17 @@ param exampleSecureStringParameter string
 - Instead of embedding complex expressions directly into resource properties, use variables to contain the expressions
 - This approach makes your Bicep file easier to read and understand. It avoids cluttering your resource definitions with logic
 - When you define a variable, the data type isn't needed. Variables infer the type from the resolved value
-- The value of the variable can use all expressions, including the `reference` or `list` functions
+- The value of the variable can use all available expressions, including the `reference` or `list` functions
 
 ```bicep
+// Defining Variables
 var myVariable1 = 'some value for the var'
+
+// Using Variables
+// JUst use the name of the Variable
+resource exampleStorageAccount 'Microsoft.Storage/storageAccounts@2021-04-01' = {
+  name: myVariable1
+}
 ```
 
 # 4. Resources
