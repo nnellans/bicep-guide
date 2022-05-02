@@ -15,7 +15,7 @@ Here are the major sections of a bicep file. This is also the recommended order 
 # 1. targetScope
 - You can only have 1 `targetScope` entry at the top of your file
 - It can be set to 1 of 4 options, all listed below
-- This specifies the level at which all of the resources in this Bicep file will be deployed
+- This specifies the level at which all of the resources in this Bicep file will be deployed (you can get around this by using Modules, more on that later)
 - This line is optional.  If you omit it, the default value of `resourceGroup` is used
 
 ```bicep
