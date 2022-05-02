@@ -541,5 +541,6 @@ az provider show --namespace Microsoft.Batch --query "resourceTypes[?resourceTyp
 
 # Links
 - [Bicep Resource Reference](https://docs.microsoft.com/en-us/azure/templates/)
+- [Bicep Best Practices](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/best-practices)
 - [Bicep Functions](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-functions)
 - [Bicep Operators](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/operators)
