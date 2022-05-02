@@ -478,6 +478,16 @@ multi-line comment
 
 # Other
 
+## Bicep Files & File Names
+
+Bicep files use a `.bicep` file extension
+
+Terraform will combine every .tf file in the current directory and deploy all of them at the same time.  Bicep works differently.  You can only deploy one main Bicep file per deployment.  It is suggested to name this file `main.bicep`
+
+If you are storing parameters values in a separate parameters JSON file, it is common practice to use the name of the Bicep file and just add the word "parameters" like so:
+`Bicep file:      exampleFile.bicep`
+`Parameter file:  exampleFile.parameters.json
+
 ## Functions
 
 Bicep has a large assortment of functions that can be used in your template.  Check out the [officials docs](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-functions) for more information about all of the available Functions and their instructions.
