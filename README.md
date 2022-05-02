@@ -15,7 +15,7 @@ Here are the major sections of a bicep file. This is also the recommended order 
 # 1. targetScope
 - You can only have 1 `targetScope` entry at the top of your file
 - It can be set to 1 of 4 options, all listed below
-- This specifies the level at which all of the resources in this Bicep file will be deployed (you can get around this by using Modules, more on that later)
+- This specifies the level at which all of the resources in this Bicep file will be deployed (however, you can get around this by using Modules, more on that later)
 - This line is optional.  If you omit it, the default value of `resourceGroup` is used
 
 ```bicep
@@ -29,7 +29,7 @@ targetScope = 'tenant'
 - Parameters are for values that will change/vary between different deployments
 - Each Parameter must be set to one of the supported Data Types (see below)
 - Optionally, you can use `=` to set a default value for the Parameter
-- The default value can use expressions, but it can NOT use the `reference` or `list` functions
+  - The default value can use expressions, but it can NOT use the `reference` or `list` functions
 
 ```bicep
 // Defining Parameters
