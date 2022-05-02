@@ -486,8 +486,10 @@ Terraform will combine every .tf file in the current directory and deploy all of
 
 If you are storing parameters values in a separate parameters JSON file, it is common practice to use the name of the Bicep file and just add the word "parameters" like so:
 
-`Bicep file:      exampleFile.bicep`
-`Parameter file:  exampleFile.parameters.json`
+```
+Bicep file:      exampleFile.bicep
+Parameter file:  exampleFile.parameters.json
+```
 
 ## Functions
 
