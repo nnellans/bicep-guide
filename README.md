@@ -46,12 +46,13 @@ resource exampleStorageAccount 'Microsoft.Storage/storageAccounts@2021-04-01' = 
 ```
 
 ## Parameter Decorators
-- Decorators are placed directly above the parameter
-- You can use more than one decorator for each parameter
-- It's good practice to specify the min and max character length for parameters that control resource naming. These limitations help avoid errors later during deployment
-- For integers you can specify min and max values, instead
-- It's good practice to provide descriptions for all of your parameters. Try to make them helpful
-- The `@allowed()` decorator can be used to provide allowed values in an array. If the value doesn't match, then the deployment fails
+- Decorators are placed directly above the parameter definition
+- You can use more than one decorator for each parameter definition
+- It's good practice to specify the `minLength` and `maxLength` decorators for parameters that control resource naming. These limitations help avoid errors later during deployment
+  - For integers you can specify `minValue` and `maxValue` decorators, instead
+- It's good practice to provide the `description` decorator for all of your parameters. Try to make them helpful
+- The `allowed` decorator can be used to provide allowed values in an array. If the value doesn't match, then the deployment fails
+  - Use this sparingly, as Azure makes changes frequently to things like SKUs and sizes, so you don't want to have an allowed list that is out of date
 
 ```bicep
 @minLength(1)
