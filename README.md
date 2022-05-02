@@ -32,9 +32,17 @@ targetScope = 'tenant'
 - The default value can use expressions, but it can NOT use the `reference` or `list` functions
 
 ```bicep
+// Defining Parameters
 param myParameter1 string
 param myParameter2 int
 param myParameter3 string = 'default Value'
+
+// Using Parameters
+// Just use the name of the Parameter
+resource exampleStorageAccount 'Microsoft.Storage/storageAccounts@2021-04-01' = {
+  name: myParameter1
+  location: myParameter2
+}
 ```
 
 ## Parameter Decorators
