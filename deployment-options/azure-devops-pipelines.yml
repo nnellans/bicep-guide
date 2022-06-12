@@ -2,6 +2,7 @@
 # https://www.nathannellans.com/post/deploying-bicep-files-part-4-azure-devops-pipelines
 
 trigger: none
+pr: none
 
 pool: 
   vmImage: ubuntu-latest
