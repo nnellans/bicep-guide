@@ -110,7 +110,7 @@ param exampleIntParameter int = 1200
 
 ### Object
 - Objects use braces / curly brackets:  `{ }`
-- Starting with version 0.7.4, Bicep now supports single-line objects as well as multi-line object
+- Starting with version 0.7.4, Bicep now supports single-line objects as well as multi-line objects
   ```bicep
   param someName object = { key: 'value', key: 'value' }
   ```
