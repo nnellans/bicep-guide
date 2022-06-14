@@ -74,7 +74,7 @@ Bicep data types include:  array, bool, int, object, string (plus secureObject a
 
 ### Array
 - Arrays use square brackets:  `[ ]`
-- Starting with version 0.7.4 Bicep supports single-line arrays as well as multi-line arrays
+- Starting with version 0.7.4, Bicep now supports single-line arrays as well as multi-line arrays
   ```bicep
   param someName array = [ 'one', 'two', 'three' ]
   ```
@@ -110,7 +110,7 @@ param exampleIntParameter int = 1200
 
 ### Object
 - Objects use braces / curly brackets:  `{ }`
-- Starting with version 0.7.4 Bicep supports single-line objects as well as multi-line object
+- Starting with version 0.7.4, Bicep now supports single-line objects as well as multi-line object
   ```bicep
   param someName object = { key: 'value', key: 'value' }
   ```
