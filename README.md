@@ -1,4 +1,4 @@
-Warning: This is not a very beginner-friendly guide.  Think of this more like an advanced cheat sheet, of sorts.  I went through most of the Microsoft Bicep documentation and captured any notes that I felt were relevant or important.  Then, I organized them into the README file you see here.  Some of it is still a work in progress, and I will update this over time.
+Warning: This is not a beginner-friendly guide.  Think of this more like an advanced cheat sheet.  I went through most of the Microsoft Bicep documentation, as well as various books, and captured any notes that I felt were relevant or important.  Then, I organized them into the README file you see here.  Some of it is still a work in progress, and I will update this over time.
 
 If you are new to Bicep, then I would suggest going through the Microsoft Docs or doing a couple Microsoft Learn courses first.
 
@@ -74,21 +74,29 @@ Bicep data types include:  array, bool, int, object, string (plus secureObject a
 
 ### Array
 - Arrays use square brackets:  `[ ]`
-- Starting with version 0.7.4, Bicep now supports single-line arrays as well as multi-line arrays
+- Bicep versions 0.7.4 and newer support single-line arrays as well as multi-line arrays
   ```bicep
+  // Bicep 0.7.4 and newer
   param someName array = [ 'one', 'two', 'three' ]
   ```
   - For single-line arrays, use commas to separate values
   - A comma after the last value is supported, but not required
-- Older versions of Bicep must use multi-line arrays
+- Bicep versions 0.6.18 and older can only use multi-line arrays.  Also, for those older versions you must use line breaks to separate your values, no commas!
   ```bicep
+  // Bicep 0.6.18 and older
   param someName array = [
     'one'
     'two'
     'three'
   ]
+  
+  // Bicep 0.7.4 and newer can optionally use commas
+  param someName array = [
+    'one',
+    'two',
+    'three'
+  ]
   ```
-  - For multi-line arrays, do NOT use commas between values
 - The data types in an array do NOT have to match, as each item is represented by the 'any' type
 - Bicep arrays are zero-based, so `exampleArrayParameter[0] = 'value1'`
 
@@ -110,16 +118,24 @@ param exampleIntParameter int = 1200
 
 ### Object
 - Objects use braces / curly brackets:  `{ }`
-- Starting with version 0.7.4, Bicep now supports single-line objects as well as multi-line objects
+- Bicep versions 0.7.4 and newer support single-line objects as well as multi-line objects
   ```bicep
+  // Bicep 0.7.4 and newer
   param someName object = { key: 'value', key: 'value' }
   ```
   - For single-line objects, use commas to separate key/value pairs
   - A comma after the last pair is supported, but not required
-- Older versions of Bicep must use multi-line objects
+- Bicep versions 0.6.18 and older can only use multi-line objects.  Also, for those older versions you must use line breaks to separate your pairs, no commas!
   ```bicep
+  // Bicep 0.6.18 and older
   param someName object = {
     key: 'value'
+    key: 'value'
+  }
+  
+  // Bicep 0.7.4 and newer can optionally use commas
+  param someName object = {
+    key: 'value',
     key: 'value'
   }
   ```
