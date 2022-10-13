@@ -213,7 +213,7 @@ param exampleSecureStringParameter string
 var myVariable1 = 'some value for the var'
 
 // Using Variables
-// JUst use the name of the Variable
+// Just use the name of the Variable
 resource exampleStorageAccount 'Microsoft.Storage/storageAccounts@2021-04-01' = {
   name: myVariable1
 }
