@@ -529,7 +529,7 @@ multi-line comment
 
 Bicep files use a `.bicep` file extension
 
-Terraform will combine every .tf file in the current directory and deploy all of them at the same time.  Bicep works differently.  You can only deploy one main Bicep file per deployment.  It is suggested to name this file `main.bicep`
+Terraform will combine every `.tf` file in the current directory and deploy all of them at the same time.  Bicep works differently.  You can only deploy one main Bicep file per deployment.  It is suggested to name this file `main.bicep`
 
 If you are storing parameters values in a separate parameters JSON file, it is common practice to use the name of the Bicep file and just add the word "parameters" like so:
 
@@ -537,10 +537,6 @@ If you are storing parameters values in a separate parameters JSON file, it is c
 Bicep file:      exampleFile.bicep
 Parameter file:  exampleFile.parameters.json
 ```
-
-## Functions
-
-Bicep has a large assortment of functions that can be used in your template.  Check out the [officials docs](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-functions) for more information about all of the available Functions and their instructions.
 
 ## Interpolation
 - All strings in Bicep support interpolation
@@ -562,7 +558,36 @@ condition ? valueIfTrue : valueIfFalse
 
 The true or false values can be of any data type: string, integer, boolean, object, array
 
-## Deploying Bicep templates
+## Functions
+
+Bicep has a large assortment of functions that can be used in your template.  Check out the [officials docs](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-functions) for more information about all of the available Functions and their instructions.
+
+## Lambda Expressions
+Lambda Expressions are supported starting with Bicep v0.10.61.  Lambda Expressions can only be used as arguments on 4 specific functions: filter, map, reduce, and sort.  The general format of a Lambda Expression is `lambdaVariable => lambdaExpression`.  [Read the docs](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-functions-lambda) for more information and examples for Lamba Expressions.
+
+```bicep
+// 1. filter
+// this filters an input array with a custom filtering function
+// the lambda expression is applied to each element of the input array. If the expression is false, the item will be filtered out of the output array
+filter(inputArray, lambdaExpression)
+
+// 2. map
+// this applies a custom mapping function to each element of the input array
+// the lambda expression is applied to each element of the input array in order to generate the output array. This could be pulling out just one value, doing string interpolation, or any other modification you want
+map(inputArray, lambdaExpression)
+
+// 3. reduce
+// this reduces an input array with a custom reduce function
+// the lambda expression is used to aggregate the current value and the next value
+reduce(inputArray, initialValue, lambdaExpression)
+
+// 4. sort
+// this sorts an input array with a custom sort function
+// the lambda expression is used to compare two input array elements for ordering. If true, the second element will be ordered after the first in the output array
+sort(inputArray, lambdaExpression)
+```
+
+## Templates for Deploying Bicep
 
 I've written a whole series of articles describing the different methods that can be used to deploy Bicep:
 - [Deploying with Az CLI](https://www.nathannellans.com/post/deploying-bicep-files-part-2-az-cli)
