@@ -4,6 +4,18 @@ If you are new to Bicep, then I would suggest going through the Microsoft Docs o
 
 Here is a link to my own [Bicep Deployment Series](https://www.nathannellans.com/post/all-about-bicep-deploying-bicep-files) which goes over the various nuances of deploying Bicep files.
 
+# Bicep Files & File Names
+Bicep files use a `.bicep` file extension
+
+If you are used to Terraform, you will see that Bicep works differently.  Terraform will combine every `.tf` file in the current directory and deploy all of them at the same time.  On the other hand, Bicep will deploy one main Bicep file per deployment.  It is suggested to name this file `main.bicep`
+
+If you are storing parameters values in a separate parameters JSON file, it is common practice to use the name of the Bicep file and just add the word "parameters" like so:
+
+```
+Bicep file:      exampleFile.bicep
+Parameter file:  exampleFile.parameters.json
+```
+
 # Bicep File Structure
 Here are the major sections of a bicep file. This is also the recommended order in which they should appear
 1. [targetScope](README.md#1-targetscope)
@@ -525,19 +537,6 @@ multi-line comment
 
 # Other
 
-## Bicep Files & File Names
-
-Bicep files use a `.bicep` file extension
-
-Terraform will combine every `.tf` file in the current directory and deploy all of them at the same time.  Bicep works differently.  You can only deploy one main Bicep file per deployment.  It is suggested to name this file `main.bicep`
-
-If you are storing parameters values in a separate parameters JSON file, it is common practice to use the name of the Bicep file and just add the word "parameters" like so:
-
-```
-Bicep file:      exampleFile.bicep
-Parameter file:  exampleFile.parameters.json
-```
-
 ## Interpolation
 - All strings in Bicep support interpolation
 - To inject an expression surround it by `${` and `}`
@@ -613,6 +612,7 @@ az provider show --namespace Microsoft.Batch --query "resourceTypes[?resourceTyp
 
 # Links
 - [Bicep Resource Reference](https://docs.microsoft.com/en-us/azure/templates/)
+- [Understand the structure and syntax of Bicep files](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/file)
 - [Bicep Best Practices](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/best-practices)
 - [Bicep Functions](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-functions)
 - [Bicep Operators](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/operators)
