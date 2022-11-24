@@ -621,6 +621,8 @@ Azure CLI:
 az provider show --namespace Microsoft.Batch --query "resourceTypes[?resourceType=='batchAccounts'].locations | [0]" --out table
 ```
 
+---
+
 ## Templates for Deploying Bicep
 
 I've written a whole series of articles describing the different methods that can be used to deploy Bicep:
