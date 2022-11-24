@@ -101,11 +101,13 @@ param someName array = [
   'three'
 ]
 
-// Bicep 0.7.4 and newer support single-line arrays
+// Bicep 0.7.4 and newer supports two different formats:
+//-----------------
+// 1. single-line arrays
 // Use commas to separate values
 param someName array = [ 'one', 'two', 'three' ]
 
-// Bicep 0.7.4 and newer also support multi-line arrays
+// 2. multi-line arrays
 // Use commas or line breaks to separate values
 param someName array = [
   'one',
@@ -143,11 +145,13 @@ param someName object = {
   key: 'value'
 }
 
-// Bicep 0.7.4 and newer support single-line objects
+// Bicep 0.7.4 and newer support two different formats:
+//-----------------
+// 1. single-line objects
 // Use commas to separate pairs
 param someName object = { key: 'value', key: 'value' }
 
-// Bicep 0.7.4 and newer also support multi-line objects
+// 2. multi-line objects
 // Use commas or line breaks to separate pairs
 param someName object = {
   key: 'value',
