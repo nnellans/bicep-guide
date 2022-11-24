@@ -9,7 +9,7 @@ Here is a link to my own [Bicep Deployment Series](https://www.nathannellans.com
 # Bicep Files & File Names
 Bicep files use a `.bicep` file extension and are written using their own custom domain-specific language (DSL).
 
-If you're accustomed to Terraform, you will see that Bicep works differently when it comes to deploying code.  Terraform will combine every `.tf` file in the current directory and deploy all of them at the same time.  Whereas Bicep will deploy one main Bicep file per deployment.  It is suggested to name this file `main.bicep`
+If you're accustomed to Terraform, you will see that Bicep works differently when it comes to deploying code.  Terraform will combine every `.tf` file in the current directory and deploy all of them at the same time.  Whereas Bicep will deploy one main `.bicep` file per deployment.  It is suggested to name this file `main.bicep`
 
 If you are storing parameters values in a separate parameters JSON file, it is common practice to use the name of the Bicep file and just add the word "parameters" like so:
 
