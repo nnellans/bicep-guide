@@ -1,19 +1,21 @@
-Warning: This is not a beginner-friendly guide.  Think of this more like an advanced cheat sheet.  I went through most of the Microsoft Bicep documentation, as well as various books, and captured any notes that I felt were relevant or important.  Then, I organized them into the README file you see here.  Some of it is still a work in progress, and I will update this over time.
+**Warning**: This is an advanced guide and assumes you already know the basics of Bicep.  Think of this more like an advanced cheat sheet.  I went through various sources, captured any notes that I felt were important, and organized them into the README file you see here.  If you are new to Bicep, then I would suggest going through the Microsoft Docs or doing a couple Microsoft Learn courses first.
 
-If you are new to Bicep, then I would suggest going through the Microsoft Docs or doing a couple Microsoft Learn courses first.
+It's important to know that this is a live document.  Some of the sections are still a work in progress.  I will be continually updating it over time.
 
 Here is a link to my own [Bicep Deployment Series](https://www.nathannellans.com/post/all-about-bicep-deploying-bicep-files) which goes over the various nuances of deploying Bicep files.
 
-# Bicep Files & File Names
-Bicep files use a `.bicep` file extension
+---
 
-If you are used to Terraform, you will see that Bicep works differently.  Terraform will combine every `.tf` file in the current directory and deploy all of them at the same time.  On the other hand, Bicep will deploy one main Bicep file per deployment.  It is suggested to name this file `main.bicep`
+# Bicep Files & File Names
+Bicep files use a `.bicep` file extension and are written using their own custom domain-specific language (DSL).
+
+If you're accustomed to Terraform, you will see that Bicep works differently when it comes to deploying code.  Terraform will combine every `.tf` file in the current directory and deploy all of them at the same time.  Whereas Bicep will deploy one main Bicep file per deployment.  It is suggested to name this file `main.bicep`
 
 If you are storing parameters values in a separate parameters JSON file, it is common practice to use the name of the Bicep file and just add the word "parameters" like so:
 
 ```
-Bicep file:      exampleFile.bicep
-Parameter file:  exampleFile.parameters.json
+Bicep file:      main.bicep
+Parameter file:  main.parameters.json
 ```
 
 # Bicep File Structure
@@ -23,6 +25,8 @@ Here are the major sections of a bicep file. This is also the recommended order 
 3. [Variables](README.md#3-variables)
 4. [Resources](README.md#4-resources) and/or [Modules](README.md#4-modules)
 5. [Outputs](README.md#5-outputs)
+
+---
 
 # 1. targetScope
 - You can only have 1 `targetScope` entry at the top of your file
@@ -36,6 +40,8 @@ targetScope = 'subscription'
 targetScope = 'managementGroup'
 targetScope = 'tenant'
 ```
+
+---
 
 # 2. Parameters
 - Parameters are for values that will change/vary between different deployments
@@ -214,6 +220,8 @@ param exampleSecureObjectParameter object
 param exampleSecureStringParameter string
 ```
 
+---
+
 # 3. Variables
 - Instead of embedding complex expressions directly into resource properties, use variables to contain the expressions
 - This approach makes your Bicep file easier to read and understand. It avoids cluttering your resource definitions with logic
@@ -230,6 +238,8 @@ resource exampleStorageAccount 'Microsoft.Storage/storageAccounts@2021-04-01' = 
   name: myVariable1
 }
 ```
+
+---
 
 # 4. Resources
 - It's a good idea to use a recent API version for each resource. New features in Azure services are sometimes available only in newer API versions
@@ -379,6 +389,9 @@ resource myExtensionResource3 'Microsoft.Authorization/roleAssignments@2020-10-0
   }
 }
 ```
+
+---
+
 # 4. Modules
 - A module is just a Bicep file that is deployed from another Bicep file, allowing you to reuse code
 - The module (Bicep file) can be a local file or stored in a Registry
@@ -421,6 +434,8 @@ How to use a Module (Bicep file) in a Registry
 module myModule3 'br:exampleregistry.azurecr.io/bicep/modules/storage:v1' = {
 ```
 
+---
+
 # 5. Outputs
 - Use Outputs when you need to return certain values from a deployment
 - Make sure you don't create outputs for sensitive data. Output values can be accessed by anyone who can view the deployment history. They're NOT appropriate for handling secrets
@@ -448,6 +463,8 @@ Azure CLI:
 ```
 az deployment group show -g <rgName> -n <deploymentName> --query properties.outputs.myOutput2.value
 ```
+
+---
 
 # Conditions (If)
 You can deploy a resource only if a certain condition is met, otherwise the resource will not be deployed
@@ -586,17 +603,7 @@ reduce(inputArray, initialValue, lambdaExpression)
 sort(inputArray, lambdaExpression)
 ```
 
-## Templates for Deploying Bicep
-
-I've written a whole series of articles describing the different methods that can be used to deploy Bicep:
-- [Deploying with Az CLI](https://www.nathannellans.com/post/deploying-bicep-files-part-2-az-cli)
-- [Deploying with Az PowerShell Module](https://www.nathannellans.com/post/deploying-bicep-files-part-3-az-powershell-module)
-- [Deploying with Azure DevOps Pipelines](https://www.nathannellans.com/post/deploying-bicep-files-part-4-azure-devops-pipelines)
-
-I've also included some example files in this repo:
-- [Az CLI examples](./deployment-options/az-cli.sh)
-- [Az PowerShell Module examples](./deployment-options/az-powershell-module.ps1)
-- [Azure DevOps Pipelines examples](./deployment-options/azure-devops-pipelines.yml)
+---
 
 ## Examples of getting info from ARM Resource Provider (WIP)
 
@@ -609,6 +616,20 @@ Azure CLI:
 ```
 az provider show --namespace Microsoft.Batch --query "resourceTypes[?resourceType=='batchAccounts'].locations | [0]" --out table
 ```
+
+## Templates for Deploying Bicep
+
+I've written a whole series of articles describing the different methods that can be used to deploy Bicep:
+- [Deploying with Az CLI](https://www.nathannellans.com/post/deploying-bicep-files-part-2-az-cli)
+- [Deploying with Az PowerShell Module](https://www.nathannellans.com/post/deploying-bicep-files-part-3-az-powershell-module)
+- [Deploying with Azure DevOps Pipelines](https://www.nathannellans.com/post/deploying-bicep-files-part-4-azure-devops-pipelines)
+
+I've also included some example files in this repo:
+- [Az CLI examples](./deployment-options/az-cli.sh)
+- [Az PowerShell Module examples](./deployment-options/az-powershell-module.ps1)
+- [Azure DevOps Pipelines examples](./deployment-options/azure-devops-pipelines.yml)
+
+---
 
 # Links
 - [Bicep Resource Reference](https://docs.microsoft.com/en-us/azure/templates/)
