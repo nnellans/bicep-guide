@@ -545,7 +545,11 @@ resource myResource9 'Microsoft.Storage/storageAccounts@2021-08-01' = [for item 
 }]
 ```
 
-# Bicep Comments
+---
+
+# Other
+
+## Comments
 
 ```bicep
 // This is a single-line comment
@@ -555,8 +559,6 @@ This is a
 multi-line comment
 */
 ```
-
-# Other
 
 ## Interpolation
 - All strings in Bicep support interpolation
@@ -582,7 +584,7 @@ The true or false values can be of any data type: string, integer, boolean, obje
 
 Bicep has a large assortment of functions that can be used in your template.  Check out the [officials docs](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-functions) for more information about all of the available Functions and their instructions.
 
-## Lambda Expressions
+### Lambda Expressions
 Lambda Expressions are supported starting with Bicep v0.10.61.  Lambda Expressions can only be used as arguments on 4 specific functions: filter, map, reduce, and sort.  The general format of a Lambda Expression is `lambdaVariable => lambdaExpression`.  [Read the docs](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-functions-lambda) for more information and examples for Lamba Expressions.
 
 ```bicep
