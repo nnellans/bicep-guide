@@ -95,16 +95,15 @@ Bicep data types include:  array, bool, int, object, string (plus secureObject a
 ### Array
 - Arrays use square brackets:  `[ ]`
 ```bicep
-// Bicep 0.6.18 and older support multi-line arrays only
-// Use line breaks to separate values
+// Multi-line arrays (use line breaks to separate values)
 param someName array = [
   'one'
   'two'
   'three'
 ]
 
-// Starting with Bicep 0.7.4, you also have the option of single-line arrays
-// Use commas to separate values
+// Single-line arrays (use commas to separate values)
+// Requires Bicep 0.7.4 or newer
 param someName array = [ 'one', 'two', 'three' ]
 ```
 - In single-line, a comma after the last value is supported, but not required
@@ -130,15 +129,14 @@ param exampleIntParameter int = 1200
 ### Object
 - Objects use braces / curly brackets:  `{ }`
 ```bicep
-// Bicep 0.6.18 and older support multi-line objects only
-// Use line breaks to separate pairs
+// Multi-line objects (use line breaks to separate pairs)
 param someName object = {
   key: 'value'
   key: 'value'
 }
 
-// Starting with Bicep 0.7.4, you also have the option of single-line objects
-// Use commas to separate pairs
+// Single-line objects (use commas to separate pairs)
+// Requires Bicep 0.7.4 or newer
 param someName object = { key: 'value', key: 'value' }
 ```
 - For single-line, a comma after the last pair is supported, but not required
