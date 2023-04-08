@@ -96,7 +96,7 @@ Bicep data types include:  array, bool, int, object, string (plus secureObject a
 - Arrays use square brackets:  `[ ]`
 ```bicep
 // Bicep 0.6.18 and older support multi-line arrays only
-// Use line breaks to separate values, no commas
+// Use line breaks to separate values
 param someName array = [
   'one'
   'two'
@@ -110,14 +110,14 @@ param someName array = [
 param someName array = [ 'one', 'two', 'three' ]
 
 // 2. multi-line arrays
-// Use commas or line breaks to separate values
+// Use line breaks to separate values
 param someName array = [
-  'one',
-  'two',
+  'one'
+  'two'
   'three'
 ]
 ```
-- A comma after the last value is supported, but not required
+- In single-line, a comma after the last value is supported, but not required
 - The data types in an array do NOT have to match, as each item is represented by the 'any' type
 - Bicep arrays are zero-based, so `exampleArrayParameter[0] = 'value1'`
 
@@ -141,7 +141,7 @@ param exampleIntParameter int = 1200
 - Objects use braces / curly brackets:  `{ }`
 ```bicep
 // Bicep 0.6.18 and older support multi-line objects only
-// Use line breaks to separate pairs, no commas
+// Use line breaks to separate pairs
 param someName object = {
   key: 'value'
   key: 'value'
@@ -154,14 +154,14 @@ param someName object = {
 param someName object = { key: 'value', key: 'value' }
 
 // 2. multi-line objects
-// Use commas or line breaks to separate pairs
+// Use line breaks to separate pairs
 param someName object = {
-  key: 'value',
-  key: 'value',
+  key: 'value'
+  key: 'value'
   key: 'value'
 }
 ```
-- A comma after the last pair is supported, but not required
+- For single-line, a comma after the last pair is supported, but not required
 - Each property of the Object can be of any type
 - Optionally, if the key contains special characters, you can enclose the key in single quotes
 - You can use a period to access values, so `exampleObjectParameter.key2 = true`
