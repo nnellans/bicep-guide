@@ -104,7 +104,6 @@ param someName array = [
 ]
 
 // Starting with Bicep 0.7.4, you also have the option of single-line arrays
-//-----------------
 // Use commas to separate values
 param someName array = [ 'one', 'two', 'three' ]
 ```
@@ -139,7 +138,6 @@ param someName object = {
 }
 
 // Starting with Bicep 0.7.4, you also have the option of single-line objects
-//-----------------
 // Use commas to separate pairs
 param someName object = { key: 'value', key: 'value' }
 ```
