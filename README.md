@@ -103,19 +103,10 @@ param someName array = [
   'three'
 ]
 
-// Bicep 0.7.4 and newer supports two different formats:
+// Starting with Bicep 0.7.4, you also have the option of single-line arrays
 //-----------------
-// 1. single-line arrays
 // Use commas to separate values
 param someName array = [ 'one', 'two', 'three' ]
-
-// 2. multi-line arrays
-// Use line breaks to separate values
-param someName array = [
-  'one'
-  'two'
-  'three'
-]
 ```
 - In single-line, a comma after the last value is supported, but not required
 - The data types in an array do NOT have to match, as each item is represented by the 'any' type
@@ -147,19 +138,10 @@ param someName object = {
   key: 'value'
 }
 
-// Bicep 0.7.4 and newer support two different formats:
+// Starting with Bicep 0.7.4, you also have the option of single-line objects
 //-----------------
-// 1. single-line objects
 // Use commas to separate pairs
 param someName object = { key: 'value', key: 'value' }
-
-// 2. multi-line objects
-// Use line breaks to separate pairs
-param someName object = {
-  key: 'value'
-  key: 'value'
-  key: 'value'
-}
 ```
 - For single-line, a comma after the last pair is supported, but not required
 - Each property of the Object can be of any type
