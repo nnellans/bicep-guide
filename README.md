@@ -1,6 +1,6 @@
 # Bicep Guide
 
-> [!WARNING]
+> [!IMPORTANT]
 > This is an advanced guide and assumes you already know the basics of Bicep.  Think of this more like an advanced cheat sheet.  I went through various sources, captured any notes that I felt were important, and organized them into the README file you see here.  If you are new to Bicep, then I would suggest going through the Microsoft Docs or doing a couple Microsoft Learn courses first.
 
 > [!WARNING]
