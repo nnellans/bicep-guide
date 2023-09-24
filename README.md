@@ -16,11 +16,12 @@ Bicep files use a `.bicep` file extension and are written using their own custom
 
 If you're accustomed to Terraform, you will see that Bicep works differently when it comes to deploying code.  Terraform will combine every `.tf` file in the current directory and deploy all of them at the same time.  Whereas Bicep will deploy one main `.bicep` file per deployment.  It is suggested to name this file `main.bicep`
 
-If you are storing parameters values in a separate parameters JSON file, it is common practice to use the name of the Bicep file and just add the word "parameters" like so:
+If you are storing parameters values in a separate parameters JSON file, it is common practice to use the name of the Bicep file and just add the word "parameters" like shown below.  If you are using the newer Bicep parameter format, then just use the name of the Bicep file with the extension of `.bicepparam`
 
 ```
-Bicep file:      main.bicep
-Parameter file:  main.parameters.json
+Bicep file:           main.bicep
+JSON Parameter file:  main.parameters.json
+Bicep Parameter file: main.bicepparam
 ```
 
 # Bicep File Structure
@@ -226,7 +227,7 @@ param exampleSecureStringParameter string
 ```
 
 ### Custom User-Defined Types
-- Starting with Bicep 0.12.1, you can create your own user-defined types
+- Starting with Bicep v0.12.1, you can create your own user-defined types
 
 ```bicep
 // This custom type defines a string, and sets 3 allowed values
