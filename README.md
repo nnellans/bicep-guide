@@ -25,15 +25,28 @@ Parameter file:  main.parameters.json
 
 # Bicep File Structure
 Here are the major sections of a bicep file. This is also the recommended order in which they should appear
-1. [targetScope](README.md#1-targetscope)
-2. [Parameters](README.md#2-parameters)
-3. [Variables](README.md#3-variables)
-4. [Resources](README.md#4-resources) and/or [Modules](README.md#4-modules)
-5. [Outputs](README.md#5-outputs)
+1. [metadata](README.md#1-metadata)
+2. [targetScope](README.md#2-targetscope)
+3. [Parameters](README.md#3-parameters)
+4. [Variables](README.md#4-variables)
+5. [Resources](README.md#5-resources) and/or [Modules](README.md#5-modules)
+6. [Outputs](README.md#6-outputs)
 
 ---
 
-# 1. targetScope
+# 1. Metadata
+- These are simple key/value pairs that can contain any information you want to include
+- Some good examples are a description, author, creation date, etc.
+- These are optional
+
+```bicep
+metadata description = 'This file deploys 12 resources'
+metadata author = 'me@nathannellans.com'
+```
+
+---
+
+# 2. targetScope
 - You can only have 1 `targetScope` entry at the top of your file
 - It can be set to 1 of 4 options, all listed below
 - This specifies the level at which all of the resources in this Bicep file will be deployed (however, you can get around this by using Modules, more on that later)
@@ -48,7 +61,7 @@ targetScope = 'tenant'
 
 ---
 
-# 2. Parameters
+# 3. Parameters
 - Parameters are for values that will change/vary between different deployments
 - Each Parameter must be set to one of the supported Data Types (see below)
 - Optionally, you can use `=` to set a default value for the Parameter
@@ -56,8 +69,8 @@ targetScope = 'tenant'
 
 ```bicep
 // Defining Parameters
-param myParameter1 string
-param myParameter2 int
+param myParameter1 int
+param myParameter2 array
 param myParameter3 string = 'default Value'
 
 // Using Parameters
@@ -76,6 +89,7 @@ resource exampleStorageAccount 'Microsoft.Storage/storageAccounts@2021-04-01' = 
 - It's good practice to provide the `description` decorator for all of your parameters. Try to make them helpful
 - The `allowed` decorator can be used to provide allowed values in an array. If the value doesn't match, then the deployment fails
   - Use this sparingly, as Azure makes changes frequently to things like SKUs and sizes, so you don't want to have an allowed list that is out of date
+- The `metadata` decorator is an object that can contain properties of any name and type. Use this for info that you don't want to put into the `description` decorator
 
 ```bicep
 @minLength(1)
@@ -89,6 +103,10 @@ param myParameter4 string
 
 @minValue(1)
 @maxValue(20)
+@metadata({
+  key1: 'value1'
+  key2: 'value2'
+})
 param myParameter5 int
 ```
 
@@ -207,9 +225,40 @@ param exampleSecureObjectParameter object
 param exampleSecureStringParameter string
 ```
 
+### Custom User-Defined Types
+- Starting with Bicep 0.12.1, you can create your own user-defined types
+
+```bicep
+// This custom type defines a string, and sets 3 allowed values
+type myCustomType1 = 'azure' | 'gcp' | 'aws'
+
+// To define an array put [] at the end
+// This custom type defines an array of strings
+type myCustomType2 = string[]
+
+// This custom type defines an array of strings, and only allows certain values in the array
+type myCustomType3 = ('one' | 'two' | 'three')[]
+
+// This custom type defines an object of mixed types
+type myCustomType4 = {
+  name: string
+  age: int
+  gender: string?  // The ? at the end marks this as optional
+}
+
+// Then, in your parameter, use this custom type instead of the standard types like `string`, `bool`, etc.
+param someParamName myCustomType3
+
+// Option 2, simply define the custom type inline in your parameter (this defines an array of objects)
+param someParamName {
+  name: string
+  age: int
+}[]
+```
+
 ---
 
-# 3. Variables
+# 4. Variables
 - Instead of embedding complex expressions directly into resource properties, use variables to contain the expressions
 - This approach makes your Bicep file easier to read and understand. It avoids cluttering your resource definitions with logic
 - When you define a variable, the data type isn't needed. Variables infer the type from the resolved value
@@ -228,7 +277,7 @@ resource exampleStorageAccount 'Microsoft.Storage/storageAccounts@2021-04-01' = 
 
 ---
 
-# 4. Resources
+# 5. Resources
 - It's a good idea to use a recent API version for each resource. New features in Azure services are sometimes available only in newer API versions
 - When possible, avoid using the `reference` and `resourceId` functions in your Bicep file. You can access any resource in Bicep by using the symbolic name. By using the symbolic name, you create an implicit dependency between resources
 - You can still create explicit dependencies by using a `dependsOn` block, but see notes below about this
@@ -379,7 +428,7 @@ resource myExtensionResource3 'Microsoft.Authorization/roleAssignments@2020-10-0
 
 ---
 
-# 4. Modules
+# 5. Modules
 - A module is just a Bicep file that is deployed from another Bicep file, allowing you to reuse code
 - The module (Bicep file) can be a local file or stored in a Registry
 - The `name` property is required. It becomes the name of the nested deployment resource in the generated ARM template
@@ -423,7 +472,7 @@ module myModule3 'br:exampleregistry.azurecr.io/bicep/modules/storage:v1' = {
 
 ---
 
-# 5. Outputs
+# 6. Outputs
 - Use Outputs when you need to return certain values from a deployment
 - Make sure you don't create outputs for sensitive data. Output values can be accessed by anyone who can view the deployment history. They're NOT appropriate for handling secrets
 - Instead of passing property values around through outputs, use the `existing` keyword to look up properties of resources that already exist. It's a best practice to look up keys from other resources in this way instead of passing them around through outputs. You'll always get the most up-to-date data
