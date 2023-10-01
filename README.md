@@ -618,28 +618,37 @@ The true or false values can be of any data type: string, integer, boolean, obje
 Bicep has a large assortment of functions that can be used in your template.  Check out the [officials docs](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-functions) for more information about all of the available Functions and their instructions.
 
 ### Lambda Expressions
-Lambda Expressions are supported starting with Bicep v0.10.61.  Lambda Expressions can only be used as arguments on 4 specific functions: filter, map, reduce, and sort.  The general format of a Lambda Expression is `lambdaVariable => lambdaExpression`.  [Read the docs](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-functions-lambda) for more information and examples for Lamba Expressions.
+- Lambda Expressions are supported starting with Bicep v0.10.61.
+- Lambda Expressions can only be used as arguments on 5 specific functions: `filter`, `map`, `reduce`, `sort`, and `toObject`.
+- The general format of a Lambda Expression is `lambdaVariable => lambdaExpression`.
+- [Read the docs](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-functions-lambda) for more information and examples for Lamba Expressions.
 
 ```bicep
-// 1. filter
+// 1. filter()
 // this filters an input array with a custom filtering function
 // the lambda expression is applied to each element of the input array. If the expression is false, the item will be filtered out of the output array
 filter(inputArray, lambdaExpression)
 
-// 2. map
+// 2. map()
 // this applies a custom mapping function to each element of the input array
 // the lambda expression is applied to each element of the input array in order to generate the output array. This could be pulling out just one value, doing string interpolation, or any other modification you want
 map(inputArray, lambdaExpression)
 
-// 3. reduce
+// 3. reduce()
 // this reduces an input array with a custom reduce function
 // the lambda expression is used to aggregate the current value and the next value
 reduce(inputArray, initialValue, lambdaExpression)
 
-// 4. sort
+// 4. sort()
 // this sorts an input array with a custom sort function
 // the lambda expression is used to compare two input array elements for ordering. If true, the second element will be ordered after the first in the output array
 sort(inputArray, lambdaExpression)
+
+// 5. toObject()
+// this converts an array to an object
+// the first lambda expression is required and is how you specify the key for the output object
+// the second lambda expression is required and is how you specify the value for the output object. If omitted, the value from the current iteration of the input array is used
+toObject(inputArray, lambdaExpression, [lambdaExpression])
 ```
 
 ---
