@@ -504,6 +504,18 @@ az deployment group show -g <rgName> -n <deploymentName> --query properties.outp
 
 ---
 
+# Other Topics
+
+- [Conditions (If)](README.md#conditions-if)
+- [Loops](README.md#loops)
+- Miscellaneous
+  - [Comments](README.md#comments)
+  - [Interpolation](README.md#interpolation)
+  - [Ternary Operator](README.md#ternary-operator)
+  - [Functions](README.md#functions)
+
+---
+
 # Conditions (If)
 You can deploy a resource only if a certain condition is met, otherwise the resource will not be deployed
 
@@ -581,7 +593,7 @@ resource myResource9 'Microsoft.Storage/storageAccounts@2021-08-01' = [for item 
 
 ---
 
-# Other
+# Miscellaneous
 
 ## Comments
 
