@@ -446,7 +446,8 @@ module myModule1 '../someFile1.bicep' = {
 ```
 
 How to deploy a Module to a different scope using the `scope` parameter
-> This is important, this is how you can deploy resources to a scope that is different than your 'targetScope' parameter
+> [!NOTE]
+> This is how you can deploy resources to a scope that is different than your 'targetScope' parameter
 
 ```bicep
 module myModule2 '../someFile2.bicep' = {
@@ -619,36 +620,145 @@ Bicep has a large assortment of functions that can be used in your template.  Ch
 
 ### Lambda Expressions
 - Lambda Expressions are supported starting with Bicep v0.10.61.
-- Lambda Expressions can only be used as arguments on 5 specific functions: `filter`, `map`, `reduce`, `sort`, and `toObject`.
+- Lambda Expressions can only be used as arguments on 5 specific functions: `filter`, `map`, `reduce`, `sort`, and `toObject`. See below for examples of each one
 - The general format of a Lambda Expression is `lambdaVariable => lambdaExpression`.
 - [Read the docs](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-functions-lambda) for more information and examples for Lamba Expressions.
 
+Example: `filter()`
+
 ```bicep
-// 1. filter()
-// this filters an input array with a custom filtering function
-// the lambda expression is applied to each element of the input array. If the expression is false, the item will be filtered out of the output array
+// input: array
+// lambaExpression: run a test against each element of the array
+// output: array (containing only elements that passed the test)
 filter(inputArray, lambdaExpression)
 
-// 2. map()
-// this applies a custom mapping function to each element of the input array
-// the lambda expression is applied to each element of the input array in order to generate the output array. This could be pulling out just one value, doing string interpolation, or any other modification you want
+// example
+var inputArray = [
+  {
+    name: 'Reba'
+    age: 24
+  }
+  {
+    name: 'Garth'
+    age: 10
+  }
+]
+
+output someOutput array = filter(inputArray, item => item.age > 15)
+// This retuns only elements of the array that have an age greater than 15,
+// so in our example only 1 of the 2 elements will be returned
+```
+
+Example: `map()`
+
+```bicep
+// input: array
+// lambaExpression: whatever manipulation you want
+// output: array (containing your manipulated elements)
 map(inputArray, lambdaExpression)
 
-// 3. reduce()
-// this reduces an input array with a custom reduce function
-// the lambda expression is used to aggregate the current value and the next value
-reduce(inputArray, initialValue, lambdaExpression)
+// example
+var inputArray = [
+  {
+    name: 'Reba'
+    age: 24
+  }
+  {
+    name: 'Garth'
+    age: 10
+  }
+]
 
-// 4. sort()
-// this sorts an input array with a custom sort function
-// the lambda expression is used to compare two input array elements for ordering. If true, the second element will be ordered after the first in the output array
+output someOutput1 array = map(inputArray, item => item.name)
+// This returns an array containing just the values of each name:
+// [ 'Reba', 'Garth' ]
+
+output someOutput2 array = map(inputArray, item => 'Hello ${item.name}!')
+// This returns an array which concatenates text to each name:
+// [ 'Hello Reba!', 'Hello Garth!' ]
+```
+
+Example: `reduce()`
+
+```bicep
+// input: array
+// initialValue:
+// lambdaExpression:
+// output: any
+reduce(inputArray, initialValue, lambdaExpression)
+```
+
+Example: `sort()`
+
+```bicep
+// input: array
+// lambdaExpression: an expression that compares one array element to another
+// output: array (elements are sorted per your expression)
 sort(inputArray, lambdaExpression)
 
-// 5. toObject()
-// this converts an array to an object
-// the first lambda expression is required and is how you specify the key for the output object
-// the second lambda expression is required and is how you specify the value for the output object. If omitted, the value from the current iteration of the input array is used
+// example
+var inputArray = [
+  {
+    name: 'Reba'
+    age: 24
+  }
+  {
+    name: 'Garth'
+    age: 10
+  }
+  {
+    name: 'Toby'
+    age: 2
+  }
+]
+
+output someOutput array = sort(inputArray, (item1, item2) => item1.age < item2.age)
+// This returns an array with the exact same elements, however they are sorted by age, lowest to highest
+```
+
+Example: `toObject()`
+
+```bicep
+// input: array
+// lambdaExpression: defines the key of each element for the output object
+// optional lambdaExpression: defines the value of each element for the output object
+// output: object (aka dictionary)
 toObject(inputArray, lambdaExpression, [lambdaExpression])
+
+// example
+var inputArray = [
+  {
+    name: 'Reba'
+    age: 24
+  }
+  {
+    name: 'Garth'
+    age: 10
+  }
+]
+
+output someOutput1 object = toObject(inputArray, item => item.name)
+// This creates a dictionary object, where the key of each element is the 'name'
+// Since the optional 2nd lambdaExpression was omitted, then the value becomes the original array element
+// So, for this example, we get a return value like this:
+// {
+//   Reba: {
+//     name: 'Reba'
+//     age: 24
+//   }
+//   Garth: {
+//     name: 'Garth'
+//     age: 10
+//   }
+// }
+
+output someOutput2 object = toObject(inputArray, item => item.name, item => item.age)
+// This creates a dictionary object, where the key of each element is the 'name' and the value of each one is 'age'
+// This example includes the optional 2nd lambaExpression, and we get a return value like this:
+// {
+//   Reba: 24
+//   Garth: 10
+// }
 ```
 
 ---
