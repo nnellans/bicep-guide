@@ -87,7 +87,7 @@ resource exampleStorageAccount 'Microsoft.Storage/storageAccounts@2021-04-01' = 
 - You can use more than one decorator for each parameter definition
 - It's good practice to specify the `minLength` and `maxLength` decorators for parameters that control resource naming. These limitations help avoid errors later during deployment
   - For integers you can specify `minValue` and `maxValue` decorators, instead
-- It's good practice to provide the `description` decorator for all of your parameters. Try to make them helpful
+- It's good practice to specify the `description` decorator for all of your parameters. Try to make them helpful
 - The `allowed` decorator can be used to provide allowed values in an array. If the value doesn't match, then the deployment fails
   - Use this sparingly, as Azure makes changes frequently to things like SKUs and sizes, so you don't want to have an allowed list that is out of date
 - The `metadata` decorator is an object that can contain properties of any name and type. Use this for info that you don't want to put into the `description` decorator
@@ -130,7 +130,7 @@ param someName array = [ 'one', 'two', 'three' ]
 ```
 - In single-line, a comma after the last value is supported, but not required
 - The data types in an array do NOT have to match, as each item is represented by the 'any' type
-- Bicep arrays are zero-based, so `exampleArrayParameter[0] = 'value1'`
+- Bicep arrays are zero-based, so using the example above `someName[0] = 'one'`
 
 ### Bool
 - Simply use either `true` or `false` with no quotation marks
@@ -506,6 +506,7 @@ az deployment group show -g <rgName> -n <deploymentName> --query properties.outp
 
 # Other Topics
 
+- [Parameter Files](README.md#parameter-files)
 - [Conditions (If)](README.md#conditions-if)
 - [Loops](README.md#loops)
 - Miscellaneous
@@ -515,6 +516,62 @@ az deployment group show -g <rgName> -n <deploymentName> --query properties.outp
   - [Functions](README.md#functions)
 
 ---
+
+# Parameter Files
+
+Instead of storing values for parameters directly in your `.bicep` file, you can store the values externally in a `.bicepparam` or `.json` file instead.  Then, you'd pass this parameter file, along with the `.bicep` file, to your deployment.
+
+> [!NOTE]
+> This guide is only going to cover the newer `.bicepparam` files.  If you'd like to know more about the older `.json` paramter files, then please reference [the documentation](https://learn.microsoft.com/en-us/azure/azure-resource-manager/templates/parameter-files).
+
+Format of a `.bicepparam file`
+```bicep
+// the using statement
+using 'something'
+
+// optional variables
+var varName1 = value1
+var varName2 = value2
+
+// parameter values
+param parName1 = value1
+param parName2 = readEnvironmentVariable('someEnvVar')
+param parName3 = toLower(value3)
+param parName4 = az.getSecret('subscriptionId', 'resourceGroupName', 'keyvaultName', 'secretName', 'secretVersion')
+```
+
+Each `.bicepparam` file is tied to a particular `.bicep` file.  This relationship is defined by the `using` statement.  There are multiple options for defining the `using` statement, see below for more.
+- Support for ARM Templates, Bicep Registries, and Template Specs was added in Bicep v0.22.6
+
+```bicep
+// a regular bicep file or arm template
+using 'path/to/file.bicep'
+using 'path/to/file.json'
+
+// a module from the public bicep registry
+using 'br/public:path:tag'
+
+// a module from a private bicep registry
+using 'br:registryName.azurecr.io/bicep/path:tag'
+using 'br/aliasName:path:tag'
+
+// a template spec
+using 'ts:subscriptionId/resourceGroupName/specName:tag'
+using 'ts/aliasName:specName:tag'
+
+// NOT tied to anything
+using none
+```
+
+Starting with Bicep v0.21.1 you can define optional Variables in your `.bicepparam` files.
+
+You can use expressions in the value of each parameter.
+- Use the `readEnvironmentVariable` function to pull a value from an environment variable.
+- Don't store sensitive values in your parameter files.  Instead, use the `az.getSecret` function to pull the value from Key Vault.
+  - The `az.getSecret` function can only pull secrets from Key Vault.
+  - The `az.getSecret` function can only be used in a `param` value
+  - The `az.getSecret` function only supports params that have the `@secure()` decorator
+  - By default, it will pull the latest version of the secret, unless you specify the `secretVersion` parameter
 
 # Conditions (If)
 You can deploy a resource only if a certain condition is met, otherwise the resource will not be deployed
@@ -631,16 +688,16 @@ The true or false values can be of any data type: string, integer, boolean, obje
 Bicep has a large assortment of functions that can be used in your template.  Check out the [officials docs](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-functions) for more information about all of the available Functions and their instructions.
 
 ### User-defined Functions
+- Support for User-defined Functions requires Bicep v0.26.54 or later
 - Allows you to create and use your own custom functions within a Bicep file
 - Great for when you have complicated expressions that are used repeatedly in your Bicep files
-- Support for User-defined Functions requires Bicep v0.26.54 or later
+- They can be nested, you can call a User-defined Function from another User-defined function
+- They support custom User-defined Data Types
 - Some limitations:
   - Can't access variables
   - Can only use parameters that are defined in the function
-    - Parameters defined in the function can not have default values
-  - Can not use the `reference` or `list` functions
-- They can be nested, you can call a User-defined Function from another User-defined function
-- They support custom User-defined Data Types
+    - Parameters defined in the function can't have default values
+  - Can't use the `reference` or `list` functions
 - [Read the docs](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/user-defined-functions) for more information on User-defined Functions
 
 ```bicep
