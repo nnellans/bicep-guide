@@ -631,10 +631,10 @@ The true or false values can be of any data type: string, integer, boolean, obje
 Bicep has a large assortment of functions that can be used in your template.  Check out the [officials docs](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-functions) for more information about all of the available Functions and their instructions.
 
 ### Lambda Expressions
-- Bicep v0.10.61 supports: filter, map, reduce, sort
-- Bicep v??? adds supports for: toObject
-- Bicep v0.27.1 adds support for: groupBy, mapValues, objectKeys, shallowMerge
-- Lambda Expressions can only be used as arguments on 5 specific functions: `filter`, `groupBy`, `map`, `mapValues`, `reduce`, `sort`, and `toObject`. See below for examples of each one
+- Lambda Expressions can only be used as arguments on the following specific functions:
+  - Bicep v0.10.61 supports: `filter()`, `map()`, `reduce()`, `sort()`
+  - Bicep v0.14.6 adds supports for: `toObject()`
+  - Bicep v0.27.1 adds support for: `groupBy()`, `mapValues()`
 - The general format of a Lambda Expression is `lambdaVariable => lambdaExpression`.
 - [Read the docs](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-functions-lambda) for more information and examples for Lamba Expressions.
 
@@ -643,7 +643,7 @@ Example: `filter()`
 ```bicep
 filter(inputArray, lambdaExpression)
 // input: array
-// lambaExpression: run a test against each element of the array
+// lambaExpression: expression/test to run against each element of the array
 // output: array (containing only elements that passed the test)
 
 // example
@@ -659,7 +659,7 @@ var inputArray = [
 ]
 
 output someOutput array = filter(inputArray, item => item.age > 15)
-// This retuns only elements of the array that have an age greater than 15,
+// This retuns only elements of the array that have an age value greater than 15,
 // so in our example only 1 of the 2 elements will be returned
 someOutput = [
   {
@@ -674,7 +674,7 @@ Example: `groupBy()`
 ```bicep
 groupBy(inputArray, lambdaExpression)
 // input: array
-// lambdaExpression: contains the expression used to group the array elements 
+// lambdaExpression: the expression used to group the array elements 
 // output: object (containing the grouped elements)
 
 //example
@@ -728,8 +728,8 @@ Example: `mapValues()`
 ```bicep
 mapValues(inputObject, lambdaExpression)
 // input: object
-// lambdaExpression: an expression to ...
-// output: object
+// lambdaExpression: the expression used to modify each value
+// output: object (containing modified values)
 
 // example
 var inputObject = {
@@ -738,9 +738,10 @@ var inputObject = {
 }
 
 output someOutput object = mapValues(inputObject, item => toUpper(item))
-// This returns an object which ...
+// This returns the same object, but with modified values. In this case, the values are converted to uppercase:
 someOutput = {
-  ...
+  something: 'FOO'
+  anotherthing: 'BAR'
 }
 ```
 
@@ -749,9 +750,16 @@ Example: `reduce()`
 ```bicep
 reduce(inputArray, initialValue, lambdaExpression)
 // input: array
-// initialValue:
-// lambdaExpression:
+// initialValue: the initial starting value for comparison
+// lambdaExpression: expression used to aggregate the current value with the next value
 // output: any
+
+var inputArray = [5, 3, 2, 8]
+
+output someOutput int = reduce(inputArray, 0, (currentItem, nextItem) => currentItem + nextItem)
+// This returns an integer which is the result of adding each item in the array to the next item, starting with 0
+// For example: 0 + 5 + 3 + 2 + 8
+someOutput = 18
 ```
 
 Example: `sort()`
