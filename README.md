@@ -630,11 +630,34 @@ The true or false values can be of any data type: string, integer, boolean, obje
 
 Bicep has a large assortment of functions that can be used in your template.  Check out the [officials docs](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-functions) for more information about all of the available Functions and their instructions.
 
+### User-defined Functions
+- Allows you to create and use your own custom functions within a Bicep file
+- Great for when you have complicated expressions that are used repeatedly in your Bicep files
+- Support for User-defined Functions requires Bicep v0.26.54 or later
+- Some limitations:
+  - Can't access variables
+  - Can only use parameters that are defined in the function
+    - Parameters defined in the function can not have default values
+  - Can not use the `reference` or `list` functions
+- They can be nested, you can call a User-defined Function from another User-defined function
+- They support custom User-defined Data Types
+- [Read the docs](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/user-defined-functions) for more information on User-defined Functions
+
+```bicep
+// create a user-defined function
+func functionName (argName dataType, argName dataType, ...) functionDataType => expression
+
+// first, define the functionName that you want to give to this user-defined function
+// then, define any arguments that the function uses, specify a name and a data type for each argument
+// then, define the data type of the function's return value
+// finally, define what value the function will return by creating a custom expression that uses the arguments
+```
+
 ### Lambda Expressions
 - Lambda Expressions can only be used as arguments on the following specific functions:
-  - Bicep v0.10.61 supports: `filter()`, `map()`, `reduce()`, `sort()`
-  - Bicep v0.14.6 adds supports for: `toObject()`
-  - Bicep v0.27.1 adds support for: `groupBy()`, `mapValues()`
+  - `filter()`, `map()`, `reduce()`, `sort()` - Supported with Bicep v0.10.61 onward
+  - `toObject()` - Supported with Bicep v0.14.6 onward
+  - `groupBy()`, `mapValues()` - Supported with Bicep v0.27.1 onward
 - The general format of a Lambda Expression is `lambdaVariable => lambdaExpression`.
 - [Read the docs](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-functions-lambda) for more information and examples for Lamba Expressions.
 
@@ -644,6 +667,7 @@ Example: `filter()`
 filter(inputArray, lambdaExpression)
 // input: array
 // lambaExpression: expression/test to run against each element of the array
+//   - Supports an optional index as of Bicep v0.27.1
 // output: array (containing only elements that passed the test)
 
 // example
@@ -659,8 +683,7 @@ var inputArray = [
 ]
 
 output someOutput array = filter(inputArray, item => item.age > 15)
-// This retuns only elements of the array that have an age value greater than 15,
-// so in our example only 1 of the 2 elements will be returned
+// This returns only elements of the array that have an age value greater than 15,
 someOutput = [
   {
     name: 'Reba'
@@ -694,6 +717,7 @@ Example: `map()`
 map(inputArray, lambdaExpression)
 // input: array
 // lambaExpression: whatever manipulation you want
+//   - Supports an optional index as of Bicep v0.27.1
 // output: array (containing your manipulated elements)
 
 // example
@@ -752,13 +776,14 @@ reduce(inputArray, initialValue, lambdaExpression)
 // input: array
 // initialValue: the initial starting value for comparison
 // lambdaExpression: expression used to aggregate the current value with the next value
+//   - Supports an optional index as of Bicep v0.27.1
 // output: any
 
 var inputArray = [5, 3, 2, 8]
 
 output someOutput int = reduce(inputArray, 0, (currentItem, nextItem) => currentItem + nextItem)
 // This returns an integer which is the result of adding each item in the array to the next item, starting with 0
-// For example: 0 + 5 + 3 + 2 + 8
+// For example: ((((0 + 5) + 3) + 2) + 8)
 someOutput = 18
 ```
 
