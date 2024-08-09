@@ -10,8 +10,8 @@ New-AzResourceGroupDeployment `
   -Mode Incremental | Complete `                                  # Optional, choose one. Default: Incremental
   -RollbackToLastDeployment | -RollbackToDeployment <name> `      # Optional, choose one
   -Name <deploymentName> `                                        # Optional. Default: name of the Bicep file
-  -TemplateFile <template.bicep> `
-  -TemplateParameterFile <template.parameters.json> `             # Optional
+  -TemplateFile <main.bicep> `
+  -TemplateParameterFile <main.bicepparam> `                      # Optional
   -Key1 Value1 -Key2 Value2 `                                     # Optional parameter overrides
   -WhatIf | -Confirm | -Confirm -ProceedIfNoChange                # Optional, choose one
 
@@ -19,8 +19,8 @@ New-AzResourceGroupDeployment `
 New-AzDeployment `
   -Location <region> `
   -Name <deploymentName> `                                        # Optional. Default: name of the Bicep file
-  -TemplateFile <template.bicep> `
-  -TemplateParameterFile <template.parameters.json> `             # Optional
+  -TemplateFile <main.bicep> `
+  -TemplateParameterFile <main.bicepparam> `                      # Optional
   -Key1 Value1 -Key2 Value2 `                                     # Optional parameter overrides
   -WhatIf | -Confirm | -Confirm -ProceedIfNoChange                # Optional, choose one
 
@@ -29,8 +29,8 @@ New-AzManagementGroupDeployment `
   -Location <region> `
   -ManagementGroupId <mgId> `
   -Name <deploymentName> `                                        # Optional. Default: name of the Bicep file
-  -TemplateFile <template.bicep> `
-  -TemplateParameterFile <template.parameters.json> `             # Optional
+  -TemplateFile <main.bicep> `
+  -TemplateParameterFile <main.bicepparam> `                      # Optional
   -Key1 Value1 -Key2 Value2 `                                     # Optional parameter overrides
   -WhatIf | -Confirm | -Confirm -ProceedIfNoChange                # Optional, choose one
 
@@ -38,7 +38,7 @@ New-AzManagementGroupDeployment `
 New-AzTenantDeployment `
   -Location <region> `
   -Name <deploymentName> `                                        # Optional. Default: name of the Bicep file
-  -TemplateFile <template.bicep> `
-  -TemplateParameterFile <template.parameters.json> `             # Optional
+  -TemplateFile <main.bicep> `
+  -TemplateParameterFile <main.bicepparam> `                      # Optional
   -Key1 Value1 -Key2 Value2 `                                     # Optional parameter overrides
   -WhatIf | -Confirm | -Confirm -ProceedIfNoChange                # Optional, choose one

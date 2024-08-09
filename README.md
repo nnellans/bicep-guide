@@ -14,7 +14,7 @@
 # Bicep Files & File Names
 Bicep files use a `.bicep` file extension and are written using their own custom domain-specific language (DSL).
 
-If you're accustomed to Terraform, you will see that Bicep works differently when it comes to deploying code.  Terraform will combine every `.tf` file in the current directory and deploy all of them at the same time.  Whereas Bicep will deploy one main `.bicep` file per deployment.  It is suggested to name this file `main.bicep`
+If you're accustomed to Terraform, you will see that Bicep works differently when it comes to deploying code.  Terraform will combine every `.tf` file in the current directory and deploy them all at the same time.  Whereas Bicep will deploy one main `.bicep` file per deployment.  It is suggested to name this file `main.bicep`
 
 If you are storing parameters values in a separate parameters JSON file, it is common practice to use the name of the Bicep file and just add the word "parameters" like shown below.  If you are using the newer Bicep parameter format, then just use the name of the Bicep file with the extension of `.bicepparam`.  Support for `.bicepparam` files requires Bicep v0.18.4 or later.
 
@@ -87,7 +87,7 @@ resource exampleStorageAccount 'Microsoft.Storage/storageAccounts@2021-04-01' = 
 - You can use more than one decorator for each parameter definition
 - It's good practice to specify the `minLength` and `maxLength` decorators for parameters that control resource naming. These limitations help avoid errors later during deployment
   - For integers you can specify `minValue` and `maxValue` decorators, instead
-- It's good practice to provide the `description` decorator for all of your parameters. Try to make them helpful
+- It's good practice to specify the `description` decorator for all of your parameters. Try to make them helpful
 - The `allowed` decorator can be used to provide allowed values in an array. If the value doesn't match, then the deployment fails
   - Use this sparingly, as Azure makes changes frequently to things like SKUs and sizes, so you don't want to have an allowed list that is out of date
 - The `metadata` decorator is an object that can contain properties of any name and type. Use this for info that you don't want to put into the `description` decorator
@@ -130,7 +130,7 @@ param someName array = [ 'one', 'two', 'three' ]
 ```
 - In single-line, a comma after the last value is supported, but not required
 - The data types in an array do NOT have to match, as each item is represented by the 'any' type
-- Bicep arrays are zero-based, so `exampleArrayParameter[0] = 'value1'`
+- Bicep arrays are zero-based, so using the example above `someName[0] = 'one'`
 
 ### Bool
 - Simply use either `true` or `false` with no quotation marks
@@ -506,15 +506,73 @@ az deployment group show -g <rgName> -n <deploymentName> --query properties.outp
 
 # Other Topics
 
+- [Parameter Files](README.md#parameter-files)
 - [Conditions (If)](README.md#conditions-if)
 - [Loops](README.md#loops)
 - Miscellaneous
   - [Comments](README.md#comments)
-  - [Interpolation](README.md#interpolation)
+  - [String Interpolation](README.md#string-interpolation)
   - [Ternary Operator](README.md#ternary-operator)
   - [Functions](README.md#functions)
+  - [Import / Export](README.md#import--export)
 
 ---
+
+# Parameter Files
+
+Instead of storing parameter values directly in your `.bicep` file, you can store the values externally in a `.bicepparam` or `.json` file.  Then, you'd pass this parameter file, along with the `.bicep` file, to your deployment.
+
+> [!NOTE]
+> This guide is only going to cover the newer `.bicepparam` files.  If you'd like to know more about the older `.json` parameter files, then please reference [the documentation](https://learn.microsoft.com/en-us/azure/azure-resource-manager/templates/parameter-files).
+
+Format of a `.bicepparam file`
+```bicep
+// the using statement
+using 'something'
+
+// optional variables
+var varName1 = value1
+var varName2 = value2
+
+// parameter values
+param parName1 = value1
+param parName2 = readEnvironmentVariable('someEnvVar')
+param parName3 = toLower(value3)
+param parName4 = az.getSecret('subscriptionId', 'resourceGroupName', 'keyvaultName', 'secretName', 'secretVersion')
+```
+
+Each `.bicepparam` file is tied to a particular `.bicep` file.  This relationship is defined by the `using` statement.  There are multiple options for defining the `using` statement, see below for more.
+- Support for ARM Templates, Bicep Registries, and Template Specs was added in Bicep v0.22.6
+
+```bicep
+// a regular bicep file or arm template
+using 'path/to/file.bicep'
+using 'path/to/file.json'
+
+// a module from the public bicep registry
+using 'br/public:path:tag'
+
+// a module from a private bicep registry
+using 'br:registryName.azurecr.io/bicep/path:tag'
+using 'br/aliasName:path:tag'
+
+// a template spec
+using 'ts:subscriptionId/resourceGroupName/specName:tag'
+using 'ts/aliasName:specName:tag'
+
+// NOT tied to anything
+using none
+```
+
+Starting with Bicep v0.21.1 you can define optional Variables in your `.bicepparam` files.
+
+You can use expressions in the value of each parameter.
+- Use the `readEnvironmentVariable` function to pull a value from an environment variable.
+- Don't store sensitive values in your parameter files.  Instead, use the `az.getSecret` function to pull the value from Key Vault.
+  - The `az.getSecret` function can only pull secrets from Key Vault.
+  - The `az.getSecret` function can only be used in a `param` value
+  - The `az.getSecret` function only supports params that have the `@secure()` decorator
+  - By default, it will pull the latest version of the secret, unless you specify the `secretVersion` parameter
 
 # Conditions (If)
 You can deploy a resource only if a certain condition is met, otherwise the resource will not be deployed
@@ -606,7 +664,7 @@ multi-line comment
 */
 ```
 
-## Interpolation
+## String Interpolation
 - All strings in Bicep support interpolation
 - To inject an expression surround it by `${` and `}`
 
@@ -630,19 +688,45 @@ The true or false values can be of any data type: string, integer, boolean, obje
 
 Bicep has a large assortment of functions that can be used in your template.  Check out the [officials docs](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-functions) for more information about all of the available Functions and their instructions.
 
+### User-defined Functions
+- Support for User-defined Functions requires Bicep v0.26.54 or later
+- Allows you to create and use your own custom functions within a Bicep file
+- Great for when you have complicated expressions that are used repeatedly in your Bicep files
+- They can be nested, you can call a User-defined Function from another User-defined function
+- They support custom User-defined Data Types
+- Some limitations:
+  - Can't access variables
+  - Can only use parameters that are defined in the function
+    - Parameters defined in the function can't have default values
+  - Can't use the `reference` or `list` functions
+- [Read the docs](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/user-defined-functions) for more information on User-defined Functions
+
+```bicep
+// create a user-defined function
+func functionName (argName dataType, argName dataType, ...) functionDataType => expression
+
+// first, define the functionName that you want to give to this user-defined function
+// then, define any arguments that the function uses, specify a name and a data type for each argument
+// then, define the data type of the function's return value
+// finally, define what value the function will return by creating a custom expression that uses the arguments
+```
+
 ### Lambda Expressions
-- Lambda Expressions are supported starting with Bicep v0.10.61.
-- Lambda Expressions can only be used as arguments on 5 specific functions: `filter`, `map`, `reduce`, `sort`, and `toObject`. See below for examples of each one
+- Lambda Expressions can only be used as arguments on the following specific functions:
+  - `filter()`, `map()`, `reduce()`, `sort()` - Supported with Bicep v0.10.61 onward
+  - `toObject()` - Supported with Bicep v0.14.6 onward
+  - `groupBy()`, `mapValues()` - Supported with Bicep v0.27.1 onward
 - The general format of a Lambda Expression is `lambdaVariable => lambdaExpression`.
 - [Read the docs](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-functions-lambda) for more information and examples for Lamba Expressions.
 
 Example: `filter()`
 
 ```bicep
-// input: array
-// lambaExpression: run a test against each element of the array
-// output: array (containing only elements that passed the test)
 filter(inputArray, lambdaExpression)
+// input: array
+// lambaExpression: expression/test to run against each element of the array
+//   - Supports an optional index as of Bicep v0.27.1
+// output: array (containing only elements that passed the test)
 
 // example
 var inputArray = [
@@ -657,17 +741,42 @@ var inputArray = [
 ]
 
 output someOutput array = filter(inputArray, item => item.age > 15)
-// This retuns only elements of the array that have an age greater than 15,
-// so in our example only 1 of the 2 elements will be returned
+// This returns only elements of the array that have an age value greater than 15,
+someOutput = [
+  {
+    name: 'Reba'
+    age: 24
+  }
+]
+```
+
+Example: `groupBy()`
+
+```bicep
+groupBy(inputArray, lambdaExpression)
+// input: array
+// lambdaExpression: the expression used to group the array elements 
+// output: object (containing the grouped elements)
+
+//example
+var inputArray = ['Reba', 'Rodney', 'Garth', 'Gary']
+
+output someOutput object = groupBy(inputArray, item => substring(item, 0, 1))
+// This returns an object which groups the array elements by their first character
+someOutput = {
+  R: ['Reba', 'Rodney']
+  G: ['Garth', 'Gary']
+}
 ```
 
 Example: `map()`
 
 ```bicep
+map(inputArray, lambdaExpression)
 // input: array
 // lambaExpression: whatever manipulation you want
+//   - Supports an optional index as of Bicep v0.27.1
 // output: array (containing your manipulated elements)
-map(inputArray, lambdaExpression)
 
 // example
 var inputArray = [
@@ -683,30 +792,66 @@ var inputArray = [
 
 output someOutput1 array = map(inputArray, item => item.name)
 // This returns an array containing just the values of each name:
-// [ 'Reba', 'Garth' ]
+someOutput1 = [
+  'Reba'
+  'Garth'
+]
 
 output someOutput2 array = map(inputArray, item => 'Hello ${item.name}!')
 // This returns an array which concatenates text to each name:
-// [ 'Hello Reba!', 'Hello Garth!' ]
+someOutput2 = [
+  'Hello Reba!'
+  'Hello Garth!'
+]
+```
+
+Example: `mapValues()`
+
+```bicep
+mapValues(inputObject, lambdaExpression)
+// input: object
+// lambdaExpression: the expression used to modify each value
+// output: object (containing modified values)
+
+// example
+var inputObject = {
+  something: 'foo'
+  anotherthing: 'bar'
+}
+
+output someOutput object = mapValues(inputObject, item => toUpper(item))
+// This returns the same object, but with modified values. In this case, the values are converted to uppercase:
+someOutput = {
+  something: 'FOO'
+  anotherthing: 'BAR'
+}
 ```
 
 Example: `reduce()`
 
 ```bicep
-// input: array
-// initialValue:
-// lambdaExpression:
-// output: any
 reduce(inputArray, initialValue, lambdaExpression)
+// input: array
+// initialValue: the initial starting value for comparison
+// lambdaExpression: expression used to aggregate the current value with the next value
+//   - Supports an optional index as of Bicep v0.27.1
+// output: any
+
+var inputArray = [5, 3, 2, 8]
+
+output someOutput int = reduce(inputArray, 0, (currentItem, nextItem) => currentItem + nextItem)
+// This returns an integer which is the result of adding each item in the array to the next item, starting with 0
+// For example: ((((0 + 5) + 3) + 2) + 8)
+someOutput = 18
 ```
 
 Example: `sort()`
 
 ```bicep
+sort(inputArray, lambdaExpression)
 // input: array
 // lambdaExpression: an expression that compares one array element to another
 // output: array (elements are sorted per your expression)
-sort(inputArray, lambdaExpression)
 
 // example
 var inputArray = [
@@ -726,16 +871,30 @@ var inputArray = [
 
 output someOutput array = sort(inputArray, (item1, item2) => item1.age < item2.age)
 // This returns an array with the exact same elements, however they are sorted by age, lowest to highest
+someOutput = [
+  {
+    name: 'Toby'
+    age: 2
+  }
+  {
+    name: 'Garth'
+    age: 10
+  }
+  {
+    name: 'Reba'
+    age: 24
+  }
+]
 ```
 
 Example: `toObject()`
 
 ```bicep
+toObject(inputArray, lambdaExpression, [lambdaExpression])
 // input: array
 // lambdaExpression: defines the key of each element for the output object
 // optional lambdaExpression: defines the value of each element for the output object
-// output: object (aka dictionary)
-toObject(inputArray, lambdaExpression, [lambdaExpression])
+// output: object
 
 // example
 var inputArray = [
@@ -752,26 +911,64 @@ var inputArray = [
 output someOutput1 object = toObject(inputArray, item => item.name)
 // This creates a dictionary object, where the key of each element is the 'name'
 // Since the optional 2nd lambdaExpression was omitted, then the value becomes the original array element
-// So, for this example, we get a return value like this:
-// {
-//   Reba: {
-//     name: 'Reba'
-//     age: 24
-//   }
-//   Garth: {
-//     name: 'Garth'
-//     age: 10
-//   }
-// }
+someOutput1 = {
+  Reba: {
+    name: 'Reba'
+    age: 24
+  }
+  Garth: {
+    name: 'Garth'
+    age: 10
+  }
+}
 
 output someOutput2 object = toObject(inputArray, item => item.name, item => item.age)
 // This creates a dictionary object, where the key of each element is the 'name' and the value of each one is 'age'
 // This example includes the optional 2nd lambaExpression, and we get a return value like this:
-// {
-//   Reba: 24
-//   Garth: 10
-// }
+someOutput2 = {
+  Reba: 24
+  Garth: 10
+}
 ```
+
+### Import / Export
+- First, you can specify the `@export()` decorator on any User-defined Type (`type`), User-defined Function (`func`), or Variable (`var`).  This marks the item as being exportable.
+- Then, you can use the `import` function, in a totally different Bicep file, to import that `type`, `func`, or `var` from the first Bicep file.
+- Support for Compile-time Imports is generally available as of Bicep v0.25.3
+
+Example `exports.bicep` file:
+```bicep
+@export()
+type myUserDefinedType = {
+  something: string
+  anotherthing: int
+}
+
+@export()
+func myUserDefinedFunction(name string) string => 'Hey there ${name}'
+
+@export()
+var myVariable = 'some constant value'
+// can only use constant values, or references to other variables
+// can not use references to resources, modules, or parameters
+```
+
+Example `main.bicep` file:
+```bicep
+// method 1, import the given items from exports.bicep
+import {myUserDefinedType, myVariable} from 'exports.bicep'
+
+// method 1, same as above, but define an optional alias that you can use
+import {myVariable as newVariableAlias} from 'exports.bicep'
+
+// method 2, import everything from exports.bicep into the symbolic name allImports
+// then reference each item like so:  allImports.myUserDefinedType, allImports.myUserDefinedFunction, allImports.myVariable
+import * as allImports from 'exports.bicep'
+```
+
+Support for `.bicepparam` files
+- As of Bicep v0.22.6, you can import Variables in your `.bicepparam` files
+- As of Bicep v0.26.54, you can import User-defined Functions in your `.bicepparam` files
 
 ---
 

@@ -13,47 +13,47 @@ steps:
 - task: AzureResourceManagerTemplateDeployment@3
   inputs:
     deploymentScope: Resource Group
-    armResourceManagerConnection: <serviceConnection>           # aka 'ConnectedServiceName'
-    subscriptionId: <subId>                                     # aka 'subscriptionName'. Optional. Needed only if your armResourceManager is scoped to Management Group
-    action: Create Or Update Resource Group | DeleteRG          # Optional. Default: Create or Update Resource Group
+    armResourceManagerConnection: <serviceConnection>    # aka 'ConnectedServiceName'
+    subscriptionId: <subId>                              # aka 'subscriptionName'. Optional. Needed only if your armResourceManager is scoped to Management Group
+    action: Create Or Update Resource Group | DeleteRG   # Optional. Default: Create or Update Resource Group
     resourceGroupName: <rgName>
     location: <region>
-    deploymentMode: Incremental | Complete | Validation         # Optional. Default: Incremental
-    deploymentName: <name>                                      # Optional. Default: an automatically generated, unique value
-    templateLocation: Linked artifact                           # Optional. Default: Linked artifact. This is the only option that works for Bicep
-    csmFile: <template.bicep>                                   # Valid only when 'Linked artifact' is selected
-    csmParametersFile: <template.parameters.json>               # Optional. Valid only when 'Linked artifact' is selected
-    overrideParameters: <overrides>                             # Optional
-    deploymentOutputs: <varName>                                # Optional
-    addSpnToEnvironment: true | false                           # Optional. Default: false
+    deploymentMode: Incremental | Complete | Validation  # Optional. Default: Incremental
+    deploymentName: <name>                               # Optional. Default: an automatically generated, unique value
+    templateLocation: Linked artifact                    # Optional. Default: Linked artifact. This is the only option that works for Bicep
+    csmFile: <main.bicep>                                # Valid only when 'Linked artifact' is selected
+    csmParametersFile: <main.bicepparam>                 # Optional. Valid only when 'Linked artifact' is selected
+    overrideParameters: <overrides>                      # Optional
+    deploymentOutputs: <varName>                         # Optional
+    addSpnToEnvironment: true | false                    # Optional. Default: false
 
 # Deploy Bicep to a Subscription
 - task: AzureResourceManagerTemplateDeployment@3
   inputs:
     deploymentScope: Subscription
-    armResourceManagerConnection: <serviceConnection>           # aka 'ConnectedServiceName'
-    subscriptionId: <subId>                                     # aka 'subscriptionName'. Optional. Needed only if your armResourceManager is scoped to Management Group
+    armResourceManagerConnection: <serviceConnection>  # aka 'ConnectedServiceName'
+    subscriptionId: <subId>                            # aka 'subscriptionName'. Optional. Needed only if your armResourceManager is scoped to Management Group
     location: <region>
-    deploymentMode: Incremental | Validation                    # Optional. Default: Incremental
-    deploymentName: <name>                                      # Optional. Default: an automatically generated, unique value
-    templateLocation: Linked artifact                           # Optional. Default: Linked artifact. This is the only option that works for Bicep
-    csmFile: <template.bicep>                                   # Valid only when 'Linked artifact' is selected
-    csmParametersFile: <template.parameters.json>               # Optional. Valid only when 'Linked artifact' is selected
-    overrideParameters: <overrides>                             # Optional
-    deploymentOutputs: <varName>                                # Optional
-    addSpnToEnvironment: true | false                           # Optional. Default: false
+    deploymentMode: Incremental | Validation           # Optional. Default: Incremental
+    deploymentName: <name>                             # Optional. Default: an automatically generated, unique value
+    templateLocation: Linked artifact                  # Optional. Default: Linked artifact. This is the only option that works for Bicep
+    csmFile: <main.bicep>                              # Valid only when 'Linked artifact' is selected
+    csmParametersFile: <main.bicepparam>               # Optional. Valid only when 'Linked artifact' is selected
+    overrideParameters: <overrides>                    # Optional
+    deploymentOutputs: <varName>                       # Optional
+    addSpnToEnvironment: true | false                  # Optional. Default: false
 
 # Deploy Bicep to a Management Group
 - task: AzureResourceManagerTemplateDeployment@3
   inputs:
     deploymentScope: Management Group
-    armResourceManagerConnection: <serviceConnection>           # aka 'ConnectedServiceName'. Must be scoped to Management Group
+    armResourceManagerConnection: <serviceConnection>  # aka 'ConnectedServiceName'. Must be scoped to Management Group
     location: <region>
-    deploymentMode: Incremental | Validation                    # Optional. Default: Incremental
-    deploymentName: <name>                                      # Optional. Default: an automatically generated, unique value
-    templateLocation: Linked artifact                           # Optional. Default: Linked artifact. This is the only option that works for Bicep
-    csmFile: <template.bicep>                                   # Valid only when 'Linked artifact' is selected
-    csmParametersFile: <template.parameters.json>               # Optional. Valid only when 'Linked artifact' is selected
-    overrideParameters: 'overrides'                             # Optional
-    deploymentOutputs: <varName>                                # Optional
-    addSpnToEnvironment: true | false                           # Optional. Default: false
+    deploymentMode: Incremental | Validation           # Optional. Default: Incremental
+    deploymentName: <name>                             # Optional. Default: an automatically generated, unique value
+    templateLocation: Linked artifact                  # Optional. Default: Linked artifact. This is the only option that works for Bicep
+    csmFile: <main.bicep>                              # Valid only when 'Linked artifact' is selected
+    csmParametersFile: <main.bicepparam>               # Optional. Valid only when 'Linked artifact' is selected
+    overrideParameters: 'overrides'                    # Optional
+    deploymentOutputs: <varName>                       # Optional
+    addSpnToEnvironment: true | false                  # Optional. Default: false

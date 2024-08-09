@@ -8,8 +8,8 @@ az deployment group create \
   --mode Incremental | Complete \                                                       # Optional. Default: Incremental
   --rollback-on-error | --rollback-on-error <name> \                                    # Optional, choose one
   --name <deploymentName> \                                                             # Optional. Default: name of the Bicep file
-  --template-file <template.bicep> \
-  --parameters <template.parameters.json> \                                             # Optional
+  --template-file <main.bicep> \
+  --parameters <main.bicepparam> \                                                      # Optional
   --parameters Key1='Value1' Key2='Value2' \                                            # Optional
   --what-if | --confirm-with-what-if | --confirm-with-what-if --proceed-if-no-change    # Optional, choose one
 
@@ -17,8 +17,8 @@ az deployment group create \
 az deployment sub create \
   --location <region> \
   --name <deploymentName> \                                                             # Optional. Default: name of the Bicep file
-  --template-file <template.bicep> \
-  --parameters <template.parameters.json> \                                             # Optional
+  --template-file <main.bicep> \
+  --parameters <main.bicepparam> \                                                      # Optional
   --parameters Key1='Value1' Key2='Value2' \                                            # Optional
   --what-if | --confirm-with-what-if | --confirm-with-what-if --proceed-if-no-change    # Optional, choose one
 
@@ -27,8 +27,8 @@ az deployment mg create \
   --location <region> \
   --management-group-id <mgId> \
   --name <deploymentName> \                                                             # Optional. Default: name of the Bicep file
-  --template-file <template.bicep>
-  --parameters <template.parameters.json> \                                             # Optional
+  --template-file <main.bicep>
+  --parameters <main.bicepparam> \                                                      # Optional
   --parameters Key1='Value1' Key2='Value2' \                                            # Optional
   --what-if | --confirm-with-what-if | --confirm-with-what-if --proceed-if-no-change    # Optional, choose one
 
@@ -36,7 +36,7 @@ az deployment mg create \
 az deployment tenant create \
   --location <region> \
   --name <deploymentName> \                                                             # Optional. Default: name of the Bicep file
-  --template-file <template.bicep> \
-  --parameters <template.parameters.json> \                                             # Optional
+  --template-file <main.bicep> \
+  --parameters <main.bicepparam> \                                                      # Optional
   --parameters Key1='Value1' Key2='Value2' \                                            # Optional
   --what-if | --confirm-with-what-if | --confirm-with-what-if --proceed-if-no-change    # Optional, choose one
