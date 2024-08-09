@@ -14,7 +14,7 @@
 # Bicep Files & File Names
 Bicep files use a `.bicep` file extension and are written using their own custom domain-specific language (DSL).
 
-If you're accustomed to Terraform, you will see that Bicep works differently when it comes to deploying code.  Terraform will combine every `.tf` file in the current directory and deploy all of them at the same time.  Whereas Bicep will deploy one main `.bicep` file per deployment.  It is suggested to name this file `main.bicep`
+If you're accustomed to Terraform, you will see that Bicep works differently when it comes to deploying code.  Terraform will combine every `.tf` file in the current directory and deploy them all at the same time.  Whereas Bicep will deploy one main `.bicep` file per deployment.  It is suggested to name this file `main.bicep`
 
 If you are storing parameters values in a separate parameters JSON file, it is common practice to use the name of the Bicep file and just add the word "parameters" like shown below.  If you are using the newer Bicep parameter format, then just use the name of the Bicep file with the extension of `.bicepparam`.  Support for `.bicepparam` files requires Bicep v0.18.4 or later.
 
@@ -632,7 +632,7 @@ Bicep has a large assortment of functions that can be used in your template.  Ch
 
 ### Lambda Expressions
 - Lambda Expressions are supported starting with Bicep v0.10.61.
-- Lambda Expressions can only be used as arguments on 5 specific functions: `filter`, `map`, `reduce`, `sort`, and `toObject`. See below for examples of each one
+- Lambda Expressions can only be used as arguments on 5 specific functions: `filter`, `groupBy`, `map`, `mapValues`, `reduce`, `sort`, and `toObject`. See below for examples of each one
 - The general format of a Lambda Expression is `lambdaVariable => lambdaExpression`.
 - [Read the docs](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-functions-lambda) for more information and examples for Lamba Expressions.
 
@@ -661,6 +661,25 @@ output someOutput array = filter(inputArray, item => item.age > 15)
 // so in our example only 1 of the 2 elements will be returned
 ```
 
+Example: `groupBy()`
+
+```bicep
+// input: array
+// lambdaExpression: contains the expression used to group the array elements 
+// output: object
+groupBy(inputArray, lambdaExpression)
+
+//example
+var inputArray = ['Reba', 'Rodney', 'Garth', 'Gary']
+
+output someOutput object = groupBy(inputArray, item => substring(item, 0, 1))
+// This returns an object which groups the array elements by their first character
+// {
+//   R: ['Reba', 'Rodney']
+//   G: ['Garth', 'Gary']
+// }
+```
+
 Example: `map()`
 
 ```bicep
@@ -683,11 +702,22 @@ var inputArray = [
 
 output someOutput1 array = map(inputArray, item => item.name)
 // This returns an array containing just the values of each name:
-// [ 'Reba', 'Garth' ]
+// [
+//   'Reba'
+//   'Garth'
+// ]
 
 output someOutput2 array = map(inputArray, item => 'Hello ${item.name}!')
 // This returns an array which concatenates text to each name:
-// [ 'Hello Reba!', 'Hello Garth!' ]
+// [
+//   'Hello Reba!'
+//   'Hello Garth!'
+// ]
+```
+
+Example: `mapValues()`
+
+```bicep
 ```
 
 Example: `reduce()`
@@ -734,7 +764,7 @@ Example: `toObject()`
 // input: array
 // lambdaExpression: defines the key of each element for the output object
 // optional lambdaExpression: defines the value of each element for the output object
-// output: object (aka dictionary)
+// output: object
 toObject(inputArray, lambdaExpression, [lambdaExpression])
 
 // example
