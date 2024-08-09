@@ -606,7 +606,7 @@ multi-line comment
 */
 ```
 
-## Interpolation
+## String Interpolation
 - All strings in Bicep support interpolation
 - To inject an expression surround it by `${` and `}`
 
@@ -631,7 +631,9 @@ The true or false values can be of any data type: string, integer, boolean, obje
 Bicep has a large assortment of functions that can be used in your template.  Check out the [officials docs](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-functions) for more information about all of the available Functions and their instructions.
 
 ### Lambda Expressions
-- Lambda Expressions are supported starting with Bicep v0.10.61.
+- Bicep v0.10.61 supports: filter, map, reduce, sort
+- Bicep v??? adds supports for: toObject
+- Bicep v0.27.1 adds support for: groupBy, mapValues, objectKeys, shallowMerge
 - Lambda Expressions can only be used as arguments on 5 specific functions: `filter`, `groupBy`, `map`, `mapValues`, `reduce`, `sort`, and `toObject`. See below for examples of each one
 - The general format of a Lambda Expression is `lambdaVariable => lambdaExpression`.
 - [Read the docs](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-functions-lambda) for more information and examples for Lamba Expressions.
@@ -639,10 +641,10 @@ Bicep has a large assortment of functions that can be used in your template.  Ch
 Example: `filter()`
 
 ```bicep
+filter(inputArray, lambdaExpression)
 // input: array
 // lambaExpression: run a test against each element of the array
 // output: array (containing only elements that passed the test)
-filter(inputArray, lambdaExpression)
 
 // example
 var inputArray = [
@@ -659,34 +661,40 @@ var inputArray = [
 output someOutput array = filter(inputArray, item => item.age > 15)
 // This retuns only elements of the array that have an age greater than 15,
 // so in our example only 1 of the 2 elements will be returned
+someOutput = [
+  {
+    name: 'Reba'
+    age: 24
+  }
+]
 ```
 
 Example: `groupBy()`
 
 ```bicep
+groupBy(inputArray, lambdaExpression)
 // input: array
 // lambdaExpression: contains the expression used to group the array elements 
-// output: object
-groupBy(inputArray, lambdaExpression)
+// output: object (containing the grouped elements)
 
 //example
 var inputArray = ['Reba', 'Rodney', 'Garth', 'Gary']
 
 output someOutput object = groupBy(inputArray, item => substring(item, 0, 1))
 // This returns an object which groups the array elements by their first character
-// {
-//   R: ['Reba', 'Rodney']
-//   G: ['Garth', 'Gary']
-// }
+someOutput = {
+  R: ['Reba', 'Rodney']
+  G: ['Garth', 'Gary']
+}
 ```
 
 Example: `map()`
 
 ```bicep
+map(inputArray, lambdaExpression)
 // input: array
 // lambaExpression: whatever manipulation you want
 // output: array (containing your manipulated elements)
-map(inputArray, lambdaExpression)
 
 // example
 var inputArray = [
@@ -702,41 +710,57 @@ var inputArray = [
 
 output someOutput1 array = map(inputArray, item => item.name)
 // This returns an array containing just the values of each name:
-// [
-//   'Reba'
-//   'Garth'
-// ]
+someOutput1 = [
+  'Reba'
+  'Garth'
+]
 
 output someOutput2 array = map(inputArray, item => 'Hello ${item.name}!')
 // This returns an array which concatenates text to each name:
-// [
-//   'Hello Reba!'
-//   'Hello Garth!'
-// ]
+someOutput2 = [
+  'Hello Reba!'
+  'Hello Garth!'
+]
 ```
 
 Example: `mapValues()`
 
 ```bicep
+mapValues(inputObject, lambdaExpression)
+// input: object
+// lambdaExpression: an expression to ...
+// output: object
+
+// example
+var inputObject = {
+  something: 'foo'
+  anotherthing: 'bar'
+}
+
+output someOutput object = mapValues(inputObject, item => toUpper(item))
+// This returns an object which ...
+someOutput = {
+  ...
+}
 ```
 
 Example: `reduce()`
 
 ```bicep
+reduce(inputArray, initialValue, lambdaExpression)
 // input: array
 // initialValue:
 // lambdaExpression:
 // output: any
-reduce(inputArray, initialValue, lambdaExpression)
 ```
 
 Example: `sort()`
 
 ```bicep
+sort(inputArray, lambdaExpression)
 // input: array
 // lambdaExpression: an expression that compares one array element to another
 // output: array (elements are sorted per your expression)
-sort(inputArray, lambdaExpression)
 
 // example
 var inputArray = [
@@ -756,16 +780,30 @@ var inputArray = [
 
 output someOutput array = sort(inputArray, (item1, item2) => item1.age < item2.age)
 // This returns an array with the exact same elements, however they are sorted by age, lowest to highest
+someOutput = [
+  {
+    name: 'Toby'
+    age: 2
+  }
+  {
+    name: 'Garth'
+    age: 10
+  }
+  {
+    name: 'Reba'
+    age: 24
+  }
+]
 ```
 
 Example: `toObject()`
 
 ```bicep
+toObject(inputArray, lambdaExpression, [lambdaExpression])
 // input: array
 // lambdaExpression: defines the key of each element for the output object
 // optional lambdaExpression: defines the value of each element for the output object
 // output: object
-toObject(inputArray, lambdaExpression, [lambdaExpression])
 
 // example
 var inputArray = [
@@ -782,25 +820,24 @@ var inputArray = [
 output someOutput1 object = toObject(inputArray, item => item.name)
 // This creates a dictionary object, where the key of each element is the 'name'
 // Since the optional 2nd lambdaExpression was omitted, then the value becomes the original array element
-// So, for this example, we get a return value like this:
-// {
-//   Reba: {
-//     name: 'Reba'
-//     age: 24
-//   }
-//   Garth: {
-//     name: 'Garth'
-//     age: 10
-//   }
-// }
+someOutput1 = {
+  Reba: {
+    name: 'Reba'
+    age: 24
+  }
+  Garth: {
+    name: 'Garth'
+    age: 10
+  }
+}
 
 output someOutput2 object = toObject(inputArray, item => item.name, item => item.age)
 // This creates a dictionary object, where the key of each element is the 'name' and the value of each one is 'age'
 // This example includes the optional 2nd lambaExpression, and we get a return value like this:
-// {
-//   Reba: 24
-//   Garth: 10
-// }
+someOutput2 = {
+  Reba: 24
+  Garth: 10
+}
 ```
 
 ---
