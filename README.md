@@ -514,15 +514,16 @@ az deployment group show -g <rgName> -n <deploymentName> --query properties.outp
   - [Interpolation](README.md#interpolation)
   - [Ternary Operator](README.md#ternary-operator)
   - [Functions](README.md#functions)
+  - [Import / Export](README.md#import--export)
 
 ---
 
 # Parameter Files
 
-Instead of storing values for parameters directly in your `.bicep` file, you can store the values externally in a `.bicepparam` or `.json` file instead.  Then, you'd pass this parameter file, along with the `.bicep` file, to your deployment.
+Instead of storing parameter values directly in your `.bicep` file, you can store the values externally in a `.bicepparam` or `.json` file.  Then, you'd pass this parameter file, along with the `.bicep` file, to your deployment.
 
 > [!NOTE]
-> This guide is only going to cover the newer `.bicepparam` files.  If you'd like to know more about the older `.json` paramter files, then please reference [the documentation](https://learn.microsoft.com/en-us/azure/azure-resource-manager/templates/parameter-files).
+> This guide is only going to cover the newer `.bicepparam` files.  If you'd like to know more about the older `.json` parameter files, then please reference [the documentation](https://learn.microsoft.com/en-us/azure/azure-resource-manager/templates/parameter-files).
 
 Format of a `.bicepparam file`
 ```bicep
@@ -929,6 +930,43 @@ someOutput2 = {
   Garth: 10
 }
 ```
+
+### Import / Export
+- First, you can specify the `@export()` decorator on any User-defined Type (`type`), a User-defined Function (`func`), or a Variable (`var`).  This marks the item as being exportable.
+- Then, you can use the `import` function, in a totally different Bicep file, to import that `type`, `func`, or `var` from the first Bicep file.
+- Support for Compile-time Imports is generally available as of Bicep v0.25.3
+
+Example `exports.bicep` file:
+```bicep
+@export()
+type myUserDefinedType = {
+  something: string
+  anotherthing: int
+}
+
+@export()
+func myUserDefinedFunction(name string) string => 'Hey there ${name}'
+
+@export()
+var myVariable = 'some constant value'
+```
+
+Example `main.bicep` file:
+```bicep
+// method 1, import the given items from exports.bicep
+import {myUserDefinedType, myVariable} from 'exports.bicep'
+
+// method 1, same as above, but define an optional alias that you can use
+import {myVariable as newVariableAlias} from 'exports.bicep'
+
+// method 2, import everything from exports.bicep into the symbolic name allImports
+// then reference each item like so:  allImports.myUserDefinedType, allImports.myUserDefinedFunction, allImports.myVariable
+import * as allImports from 'exports.bicep'
+```
+
+Support for `.bicepparam` files
+- As of Bicep v0.22.6, you can import Variables in your `.bicepparam` files
+- As of Bicep v0.26.54, you can import User-defined Functions in your `.bicepparam` files
 
 ---
 
