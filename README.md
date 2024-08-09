@@ -932,7 +932,7 @@ someOutput2 = {
 ```
 
 ### Import / Export
-- First, you can specify the `@export()` decorator on any User-defined Type (`type`), a User-defined Function (`func`), or a Variable (`var`).  This marks the item as being exportable.
+- First, you can specify the `@export()` decorator on any User-defined Type (`type`), User-defined Function (`func`), or Variable (`var`).  This marks the item as being exportable.
 - Then, you can use the `import` function, in a totally different Bicep file, to import that `type`, `func`, or `var` from the first Bicep file.
 - Support for Compile-time Imports is generally available as of Bicep v0.25.3
 
