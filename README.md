@@ -949,6 +949,8 @@ func myUserDefinedFunction(name string) string => 'Hey there ${name}'
 
 @export()
 var myVariable = 'some constant value'
+// can only use constant values, or references to other variables
+// can not use references to resources, modules, or parameters
 ```
 
 Example `main.bicep` file:
