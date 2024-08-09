@@ -511,7 +511,7 @@ az deployment group show -g <rgName> -n <deploymentName> --query properties.outp
 - [Loops](README.md#loops)
 - Miscellaneous
   - [Comments](README.md#comments)
-  - [Interpolation](README.md#interpolation)
+  - [String Interpolation](README.md#string-interpolation)
   - [Ternary Operator](README.md#ternary-operator)
   - [Functions](README.md#functions)
   - [Import / Export](README.md#import--export)
