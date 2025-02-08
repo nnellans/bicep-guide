@@ -1,6 +1,6 @@
 # Bicep Guide
 
-- Version: 1.0.0
+- Version: 1.1.0
 - Author:
   - Nathan Nellans
   - Email: me@nathannellans.com
@@ -1001,11 +1001,13 @@ I've written a whole series of articles describing the different methods that ca
 - [Deploying with Az CLI](https://www.nathannellans.com/post/deploying-bicep-files-part-2-az-cli)
 - [Deploying with Az PowerShell Module](https://www.nathannellans.com/post/deploying-bicep-files-part-3-az-powershell-module)
 - [Deploying with Azure DevOps Pipelines](https://www.nathannellans.com/post/deploying-bicep-files-part-4-azure-devops-pipelines)
+- [Deploying with GitHub Actions](https://www.nathannellans.com/post/deploying-bicep-files-part-5-github-actions)
 
 I've also included some example files in this repo:
 - [Az CLI examples](./deployment-options/az-cli.sh)
 - [Az PowerShell Module examples](./deployment-options/az-powershell-module.ps1)
 - [Azure DevOps Pipelines examples](./deployment-options/azure-devops-pipelines.yml)
+- [GitHub Actions examples](./deployment-options/github-actions.yml)
 
 ---
 
