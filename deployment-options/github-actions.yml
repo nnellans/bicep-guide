@@ -1,0 +1,77 @@
+# For more information go to:
+# https://www.nathannellans.com/post/deploying-bicep-files-part-5-github-actions
+
+name: Deploy Bicep
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deployBicep:
+    runs-on: ubuntu-latest
+    steps:
+
+      # Optional. Will generate a unique value based on the current date & time
+      # Can be used for the name of the deployment
+      - id: datetime
+        run: echo "datetime=$(date +'%Y-%m-%d-%H-%M-%S')" >> $GITHUB_OUTPUT
+      
+      - name: Deploy Bicep to a Resource Group
+        uses: Azure/bicep-deploy@v2
+        with:
+          operation: create | validate | whatIf
+          type: deployment
+          name: 'bicep-deploy-${{ steps.datetime.outputs.datetime }}'  # Optional. Default: azure-bicep-deploy
+          scope: resourceGroup
+          subscription-id: <subId>
+          resource-group-name: <rgName>
+          template-file: <main.bicep>
+          parameters-file: <main.bicepparam>                           # Optional
+          parameters: '{"key":"value", "key":"value"}'                 # Optional
+          what-if-exclude-change-types:                                # Optional
+          masked-outputs:                                              # Optional
+
+      - name: Deploy Bicep to a Subscription
+        uses: Azure/bicep-deploy@v2
+        with:
+          operation: create | validate | whatIf
+          type: deployment
+          name: 'bicep-deploy-${{ steps.datetime.outputs.datetime }}'  # Optional. Default: azure-bicep-deploy
+          scope: subscription
+          subscription-id: <subId>
+          location: <location>
+          template-file: <main.bicep>
+          parameters-file: <main.bicepparam>                           # Optional
+          parameters: '{"key":"value", "key":"value"}'                 # Optional
+          what-if-exclude-change-types:                                # Optional
+          masked-outputs:                                              # Optional
+
+      - name: Deploy Bicep to a Management Group
+        uses: Azure/bicep-deploy@v2
+        with:
+          operation: create | validate | whatIf
+          type: deployment
+          name: 'bicep-deploy-${{ steps.datetime.outputs.datetime }}'  # Optional. Default: azure-bicep-deploy
+          scope: managementGroup
+          management-group-id: myMgId
+          location: <location>
+          template-file: <main.bicep>
+          parameters-file: <main.bicepparam>                           # Optional
+          parameters: '{"key":"value", "key":"value"}'                 # Optional
+          what-if-exclude-change-types:                                # Optional
+          masked-outputs:                                              # Optional
+
+      - name: Deploy Bicep to a Tenant
+        uses: Azure/bicep-deploy@v2
+        with:
+          operation: create | validate | whatIf
+          type: deployment
+          name: 'bicep-deploy-${{ steps.datetime.outputs.datetime }}'  # Optional. Default: azure-bicep-deploy
+          scope: tenant
+          tenant-id: myTenantId
+          location: <location>
+          template-file: <main.bicep>
+          parameters-file: <main.bicepparam>                           # Optional
+          parameters: '{"key":"value", "key":"value"}'                 # Optional
+          what-if-exclude-change-types:                                # Optional
+          masked-outputs:                                              # Optional
