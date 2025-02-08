@@ -16,7 +16,7 @@ New-AzResourceGroupDeployment `
   -WhatIf | -Confirm | -Confirm -ProceedIfNoChange                # Optional, choose one
 
 # Deploy Bicep to a Subscription
-New-AzDeployment `
+New-AzDeployment `                                                # aka 'New-AzSubscriptionDeployment'
   -Location <region> `
   -Name <deploymentName> `                                        # Optional. Default: name of the Bicep file
   -TemplateFile <main.bicep> `
