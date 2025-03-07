@@ -22,7 +22,3 @@ az stack group create \
 
 
 # Deployment Stacks at the Management Group scope
-
-
-# Deployment Stacks at the Tenant scope
-
