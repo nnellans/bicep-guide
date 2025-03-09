@@ -1,5 +1,5 @@
 # For more information go to:
-# https://www.nathannellans.com/post/deploying-bicep-files-part-3-az-powershell-module
+# https://www.nathannellans.com/post/deploying-bicep-files-part-6-scopes-stacks
 
 # Install the Az Module from PowerShell Gallery
 Install-Module -Name Az
