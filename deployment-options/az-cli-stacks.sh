@@ -7,6 +7,7 @@ az stack group create \
   --action-on-unmanage deleteAll|deleteResources|detachAll \    # aka --aou
   --deny-settings-mode denyDelete|denyWriteAndDelete|none \     # aka --dm
   --resource-group <rgName> \                                   # aka -g. resource group to deploy the Stack to
+  --subscription <subName> \                                    # optional. if the resource group is in a different subscription. default: current subscription
   --template-file <main.bicep> \                                # aka -f
   --parameters <main.bicepparam> \                              # aka -p. Optional
   --parameters key1=value key2=value \                          # aka -p. Optional
@@ -23,8 +24,8 @@ az stack sub create \
   --action-on-unmanage deleteAll|deleteResources|detachAll \    # aka --aou
   --deny-settings-mode denyDelete|denyWriteAndDelete|none \     # aka --dm
   --location <location> \                                       # aka -l. location to store Deployment Stack metadata
-  --subscription <subName> \                                    # optional. subscription to deploy the stack to. default: current subscription
-  --deployment-resource-group <rgName> \                        # aka --dr. optional. If deploying Stack to Sub and Bicep to RG
+  --subscription <subName> \                                    # Optional. subscription to deploy the stack to. default: current subscription
+  --deployment-resource-group <rgName> \                        # aka --dr. Optional. If deploying Stack to Sub and Bicep to RG
   --template-file <main.bicep> \                                # aka -f
   --parameters <main.bicepparam> \                              # aka -p. Optional
   --parameters key1=value key2=value \                          # aka -p. Optional
@@ -42,7 +43,7 @@ az stack mg create \
   --deny-settings-mode denyDelete|denyWriteAndDelete|none \     # aka --dm
   --location <location> \                                       # aka -l. location to store Deployment Stack metadata
   --management-group-id <mgId> \                                # aka -m. management group to deploy the stack to
-  --deployment-subscription <subName> \                         # aka --ds. optional. If deploying Stack to Mg and Bicep to Sub
+  --deployment-subscription <subName> \                         # aka --ds. Optional. If deploying Stack to MG and Bicep to Sub
   --template-file <main.bicep> \                                # aka -f
   --parameters <main.bicepparam> \                              # aka -p. Optional
   --parameters key1=value key2=value \                          # aka -p. Optional

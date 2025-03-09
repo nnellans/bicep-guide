@@ -1,0 +1,87 @@
+# For more information go to:
+# https://www.nathannellans.com/post/deploying-bicep-files-part-5-github-actions
+
+name: Deploy Bicep
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deployBicep:
+    runs-on: ubuntu-latest
+    steps:
+
+      - uses: Azure/login@v2         # First, login to Azure with an account that has permissions to do deployments
+      - uses: actions/checkout@v4    # Second, checkout the repo where the bicep and bicepparam files are located
+      
+      # Deployment Stacks at the Resource Group scope
+      - uses: Azure/bicep-deploy@v2
+        with:
+          type: deploymentStack
+          operation: create | delete | validate
+          scope: resourceGroup
+          name: <stackName>                                             # name of the Stack
+          action-on-unmanage-resources: delete | detach
+          action-on-unmanage-resourcegroups: delete | detach
+          action-on-unmanage-managementgroup: delete | detach
+          deny-settings-mode: denyDelete | denyWriteAndDelete | none
+          subscription-id: <subId>
+          resource-group-name: <rgName>
+          template-file: <main.bicep>
+          parameters-file: <main.bicepparam>                            # Optional
+          parameters: '{"key":"value", "key":"value"}'                  # Optional
+          bypass-stack-out-of-sync-error: true | false                  # Optional
+          deny-settings-apply-to-child-scopes: true | false             # Optional
+          deny-settings-excluded-actions: <actions>                     # Optional
+          deny-settings-excluded-principals: <principalIDs>             # Optional
+          description: <description>                                    # Optional. description of the Stack
+          tags: <tags>                                                  # Optional
+          masked-outputs: <outputNames>                                 # Optional
+
+      # Deployment Stacks at the Subscription scope
+      - uses: Azure/bicep-deploy@v2
+        with:
+          type: deploymentStack
+          operation: create | delete | validate
+          scope: subscription
+          name: <stackName>                                             # name of the Stack
+          action-on-unmanage-resources: delete | detach
+          action-on-unmanage-resourcegroups: delete | detach
+          action-on-unmanage-managementgroup: delete | detach
+          deny-settings-mode: denyDelete | denyWriteAndDelete | none
+          subscription-id: <subId>
+          location: <location>                                          # location to store Deployment Stack metadata
+          template-file: <main.bicep>
+          parameters-file: <main.bicepparam>                            # Optional
+          parameters: '{"key":"value", "key":"value"}'                  # Optional
+          bypass-stack-out-of-sync-error: true | false                  # Optional
+          deny-settings-apply-to-child-scopes: true | false             # Optional
+          deny-settings-excluded-actions: <actions>                     # Optional
+          deny-settings-excluded-principals: <principalIDs>             # Optional
+          description: <description>                                    # Optional. description of the Stack
+          tags: <tags>                                                  # Optional
+          masked-outputs: <outputNames>                                 # Optional
+
+      # Deployment Stacks at the Management Group scope
+      - uses: Azure/bicep-deploy@v2
+        with:
+          type: deploymentStack
+          operation: create | delete | validate
+          scope: managementGroup
+          name: <stackName>                                             # name of the Stack
+          action-on-unmanage-resources: delete | detach
+          action-on-unmanage-resourcegroups: delete | detach
+          action-on-unmanage-managementgroup: delete | detach
+          deny-settings-mode: denyDelete | denyWriteAndDelete | none
+          management-group-id: <mgId>
+          location: <location>                                          # location to store Deployment Stack metadata
+          template-file: <main.bicep>
+          parameters-file: <main.bicepparam>                            # Optional
+          parameters: '{"key":"value", "key":"value"}'                  # Optional
+          bypass-stack-out-of-sync-error: true | false                  # Optional
+          deny-settings-apply-to-child-scopes: true | false             # Optional
+          deny-settings-excluded-actions: <actions>                     # Optional
+          deny-settings-excluded-principals: <principalIDs>             # Optional
+          description: <description>                                    # Optional. description of the Stack
+          tags: <tags>                                                  # Optional
+          masked-outputs: <outputNames>                                 # Optional
