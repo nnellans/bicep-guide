@@ -7,6 +7,7 @@ az stack group create \
   --action-on-unmanage deleteAll|deleteResources|detachAll \    # aka --aou
   --deny-settings-mode denyDelete|denyWriteAndDelete|none \     # aka --dm
   --resource-group <rgName> \                                   # aka -g. resource group to deploy the Stack to
+  --subscription <subName> \                                    # optional. if the resource group is in a different subscription. default: current subscription
   --template-file <main.bicep> \                                # aka -f
   --parameters <main.bicepparam> \                              # aka -p. Optional
   --parameters key1=value key2=value \                          # aka -p. Optional
