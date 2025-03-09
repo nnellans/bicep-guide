@@ -26,8 +26,8 @@ jobs:
           operation: create | validate | whatIf
           scope: resourceGroup
           name: 'bicep-deploy-${{ steps.datetime.outputs.datetime }}'    # Optional. Default: azure-bicep-deploy
-          subscription-id: <subId>
-          resource-group-name: <rgName>
+          resource-group-name: <rgName>                                  # resource group to deploy to
+          subscription-id: <subId>                                       # subscription that contains the resource group
           template-file: <main.bicep>
           parameters-file: <main.bicepparam>                             # Optional
           parameters: '{"key":"value", "key":"value"}'                   # Optional
@@ -41,8 +41,8 @@ jobs:
           operation: create | validate | whatIf
           scope: subscription
           name: 'bicep-deploy-${{ steps.datetime.outputs.datetime }}'    # Optional. Default: azure-bicep-deploy
-          subscription-id: <subId>
-          location: <location>
+          subscription-id: <subId>                                       # subscription to deploy to
+          location: <location>                                           # location to store Deployment metadata
           template-file: <main.bicep>
           parameters-file: <main.bicepparam>                             # Optional
           parameters: '{"key":"value", "key":"value"}'                   # Optional
@@ -56,8 +56,8 @@ jobs:
           operation: create | validate | whatIf
           scope: managementGroup
           name: 'bicep-deploy-${{ steps.datetime.outputs.datetime }}'    # Optional. Default: azure-bicep-deploy
-          management-group-id: <mgId>
-          location: <location>
+          management-group-id: <mgId>                                    # management group to deploy to
+          location: <location>                                           # location to store Deployment metadata
           template-file: <main.bicep>
           parameters-file: <main.bicepparam>                             # Optional
           parameters: '{"key":"value", "key":"value"}'                   # Optional
@@ -71,8 +71,8 @@ jobs:
           operation: create | validate | whatIf
           scope: tenant
           name: 'bicep-deploy-${{ steps.datetime.outputs.datetime }}'    # Optional. Default: azure-bicep-deploy
-          tenant-id: <tenantId>
-          location: <location>
+          tenant-id: <tenantId>                                          # tenant to deploy to
+          location: <location>                                           # location to store Deployment metadata
           template-file: <main.bicep>
           parameters-file: <main.bicepparam>                             # Optional
           parameters: '{"key":"value", "key":"value"}'                   # Optional
