@@ -1,5 +1,5 @@
 # For more information go to:
-# https://www.nathannellans.com/post/deploying-bicep-files-part-6-scopes-stacks
+# https://www.nathannellans.com/post/deploying-bicep-files-part-6-scopes-stacks  
 
 # Deployment Stacks at the Resource Group scope
 az stack group create \
