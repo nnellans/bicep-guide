@@ -1,5 +1,5 @@
 # For more information go to:
-# https://www.nathannellans.com/post/deploying-bicep-files-part-5-github-actions
+# https://www.nathannellans.com/post/deploying-bicep-files-part-6-scopes-stacks
 
 name: Deploy Bicep
 

@@ -1009,6 +1009,16 @@ I've also included some example files in this repo:
 - [Azure DevOps Pipelines examples](./deployment-options/azure-devops-pipelines.yml)
 - [GitHub Actions examples](./deployment-options/github-actions.yml)
 
+## Templates for Deployment Stacks
+
+Part 6 of my Bicep Deployment Series covers Deployment Stacks:
+- [Deployment Scopes & Deployment Stacks](https://www.nathannellans.com/post/deploying-bicep-files-part-6-scopes-stacks)
+
+I've also included some example files in this repo for Deployment Stacks:
+- [Az CLI examples](https://github.com/nnellans/bicep-guide/blob/main/deployment-options/az-cli-stacks.sh)
+- [Az PowerShell Module examples](https://github.com/nnellans/bicep-guide/blob/main/deployment-options/az-powershell-module-stacks.ps1)
+- [GitHub Actions examples](https://github.com/nnellans/bicep-guide/blob/main/deployment-options/github-actions-stacks.yml)
+
 ---
 
 # Links
