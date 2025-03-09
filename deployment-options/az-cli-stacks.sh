@@ -43,7 +43,7 @@ az stack mg create \
   --deny-settings-mode denyDelete|denyWriteAndDelete|none \     # aka --dm
   --location <location> \                                       # aka -l. location to store Deployment Stack metadata
   --management-group-id <mgId> \                                # aka -m. management group to deploy the stack to
-  --deployment-subscription <subName> \                         # aka --ds. optional. If deploying Stack to Mg and Bicep to Sub
+  --deployment-subscription <subName> \                         # aka --ds. optional. If deploying Stack to MG and Bicep to Sub
   --template-file <main.bicep> \                                # aka -f
   --parameters <main.bicepparam> \                              # aka -p. Optional
   --parameters key1=value key2=value \                          # aka -p. Optional
