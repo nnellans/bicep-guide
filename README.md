@@ -100,6 +100,7 @@ resource exampleStorageAccount 'Microsoft.Storage/storageAccounts@2021-04-01' = 
 - The `allowed` decorator can be used to provide allowed values in an array. If the value doesn't match, then the deployment fails
   - Use this sparingly, as Azure makes changes frequently to things like SKUs and sizes, so you don't want to have an allowed list that is out of date
 - The `metadata` decorator is an object that can contain properties of any name and type. Use this for info that you don't want to put into the `description` decorator
+- More on the `secure` decorator below
 
 ```bicep
 @minLength(1)
@@ -109,6 +110,7 @@ resource exampleStorageAccount 'Microsoft.Storage/storageAccounts@2021-04-01' = 
   'option1'
   'option2'
 ])
+@secure()
 param myParameter4 string
 
 @minValue(1)
@@ -272,11 +274,15 @@ param someParamName {
 - Instead of embedding complex expressions directly into resource properties, use variables to contain the expressions
 - This approach makes your Bicep file easier to read and understand. It avoids cluttering your resource definitions with logic
 - When you define a variable, the data type isn't needed. Variables infer the type from the resolved value
+  - Starting with Bicep v0.36.1, you can provide a data type for your variables
 - The value of the variable can use all available expressions, including the `reference` or `list` functions
 
 ```bicep
 // Defining Variables
 var myVariable1 = 'some value for the var'
+
+// With optional type
+var myVariable2 string = 'some value'
 
 // Using Variables
 // Just use the name of the Variable
@@ -441,11 +447,13 @@ resource myExtensionResource3 'Microsoft.Authorization/roleAssignments@2020-10-0
 # 5. Modules
 - A module is just a Bicep file that is deployed from another Bicep file, allowing you to reuse code
 - The module (Bicep file) can be a local file or stored in a Registry
-- The `name` property is required. It becomes the name of the nested deployment resource in the generated ARM template
+- The `name` property is optional starting with Bicep v0.34.1
+  - It becomes the name of the nested deployment resource in the generated ARM template
+  - If no name is provided, a GUID will be generated as the name for the nested deployment resource
 
 ```bicep
 module myModule1 '../someFile1.bicep' = {
-  name: 'myModule1Deployment'
+  name: 'myModule1Deployment' // optional
   params: {
     myModule1Param1: 'something'
     myModule1Param2: 'something'
@@ -488,9 +496,13 @@ module myModule3 'br:exampleregistry.azurecr.io/bicep/modules/storage:v1' = {
 - Make sure you don't create outputs for sensitive data. Output values can be accessed by anyone who can view the deployment history. They're NOT appropriate for handling secrets
 - Instead of passing property values around through outputs, use the `existing` keyword to look up properties of resources that already exist. It's a best practice to look up keys from other resources in this way instead of passing them around through outputs. You'll always get the most up-to-date data
 - Outputs must set a specific data type
+- Outputs of type `string` and `object` support the `@secure` decorator starting with Bicep v0.18.4 or later.  This prevents the value from being logged or displayed in deployment history, Azure portal, or command-line outputs.
 
 ```bicep
 output myOutput1 int = myResource4.properties.maxNumberOfRecordSets
+
+@secure()
+output myOutput2 string = myResource4.properties.maxNumberOfRecordSets
 ```
 
 If the property being returned has a hyphen in the name, you can NOT use the dot notation as shown above.  Instead, you must use brackets around the property
