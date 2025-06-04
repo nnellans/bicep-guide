@@ -61,6 +61,7 @@ metadata author = 'me@nathannellans.com'
 - It can be set to 1 of 4 options, all listed below
 - This specifies the level at which all of the resources in this Bicep file will be deployed (however, you can get around this by using Modules, more on that later)
 - This line is optional.  If you omit it, the default value of `resourceGroup` is used
+- More detailed information about scopes can be found on [my blog](https://www.nathannellans.com/post/deploying-bicep-files-part-6-scopes-stacks)
 
 ```bicep
 targetScope = 'resourceGroup'
@@ -100,7 +101,9 @@ resource exampleStorageAccount 'Microsoft.Storage/storageAccounts@2021-04-01' = 
 - The `allowed` decorator can be used to provide allowed values in an array. If the value doesn't match, then the deployment fails
   - Use this sparingly, as Azure makes changes frequently to things like SKUs and sizes, so you don't want to have an allowed list that is out of date
 - The `metadata` decorator is an object that can contain properties of any name and type. Use this for info that you don't want to put into the `description` decorator
-- More on the `secure` decorator below
+- The `secure` decorator can be used on `string` and `object` parameters. The value for a secure parameter isn't saved to the deployment history and isn't logged
+  - Make sure you use this parameter in a location that expects a secure value, for example Tag values are stored in plain text, so do not use a secure string parameter in a Tag
+  - Since these are secure, do NOT set a default value, as that will be stored in code
 
 ```bicep
 @minLength(1)
@@ -123,7 +126,7 @@ param myParameter5 int
 ```
 
 ## Bicep Data Types:
-Bicep data types include:  array, bool, int, object, string (plus secureObject and secureString)
+Bicep data types include:  array, bool, int, object, string, and union types
 
 ### Array
 - Arrays use square brackets:  `[ ]`
@@ -174,7 +177,7 @@ param someName object = { key: 'value', key: 'value' }
 ```
 - For single-line, a comma after the last pair is supported, but not required
 - Each property of the Object can be of any type
-- Optionally, if the key contains special characters, you can enclose the key in single quotes
+- If the key contains special characters, you can enclose the key in single quotes
 - You can use a period to access values, so `exampleObjectParameter.key2 = true`
 - You can also use brackets to access values, so `exampleObjectParameter['key4'].keyA = 'value2'`
 - Complex object example:
@@ -223,20 +226,6 @@ this
 '''
 ```
 
-### secureObject and secureString
-- Just add the `@secure()` decorator before your Object or String parameter
-- The value is not saved to the deployment history and is not logged
-- Make sure you use this parameter in a location that expects a secure value, for example Tag values are stored in plain text, so do not use a secureString parameter in a Tag
-- Since these are secure, do NOT set a default value, as that will be stored in code
-
-```bicep
-@secure()
-param exampleSecureObjectParameter object
-
-@secure()
-param exampleSecureStringParameter string
-```
-
 ### Custom User-Defined Types
 - Starting with Bicep v0.21.1, you can create your own user-defined types
 
@@ -274,7 +263,7 @@ param someParamName {
 - Instead of embedding complex expressions directly into resource properties, use variables to contain the expressions
 - This approach makes your Bicep file easier to read and understand. It avoids cluttering your resource definitions with logic
 - When you define a variable, the data type isn't needed. Variables infer the type from the resolved value
-  - Starting with Bicep v0.36.1, you can provide a data type for your variables
+  - Starting with Bicep v0.36.1, you can optionally provide a data type for your variables
 - The value of the variable can use all available expressions, including the `reference` or `list` functions
 
 ```bicep
@@ -325,6 +314,7 @@ resource myResource2 'Microsoft.Storage/storageAccounts@2019-06-01' existing = {
 ```
 
 Optionally, you can set the `scope` property to access an existing resource in a different scope
+- More detailed information about scopes can be found on [my blog](https://www.nathannellans.com/post/deploying-bicep-files-part-6-scopes-stacks)
 
 ```bicep
 resource myResource3 'Microsoft.Storage/storageAccounts@2019-06-01' existing = {
@@ -442,6 +432,8 @@ resource myExtensionResource3 'Microsoft.Authorization/roleAssignments@2020-10-0
 }
 ```
 
+More detailed information about scopes can be found on [my blog](https://www.nathannellans.com/post/deploying-bicep-files-part-6-scopes-stacks)
+
 ---
 
 # 5. Modules
@@ -465,11 +457,12 @@ module myModule1 '../someFile1.bicep' = {
 How to deploy a Module to a different scope using the `scope` parameter
 > [!NOTE]
 > This is how you can deploy resources to a scope that is different than your 'targetScope' parameter
+> More detailed information about scopes can be found on [my blog](https://www.nathannellans.com/post/deploying-bicep-files-part-6-scopes-stacks)
 
 ```bicep
 module myModule2 '../someFile2.bicep' = {
   name: 'myModule2Deployment'
-  scope: 'anotherSubscription'
+  scope: subscription('xxxx')
   params: {
     myModule2Param1: 'something'
     myModule2Param2: 'something'
@@ -481,9 +474,9 @@ module myModule2 '../someFile2.bicep' = {
 How to use a Module (Bicep file) in a Registry
 - `br:` is the schema name for a Bicep Registry
 - Optionally, you can configure Bicep Registry 'aliases' in your `bicepconfig.json` file and use the alias instead of the full registry path.  See this for [more info](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-config-modules)
-  - Starting with Bicep v0.5.6 there is a default alias called `public` which points at Microsoft's official registry of Bicep modules.
-  - An example would be:  `br/public:network/virtual-network:1.0`
-  - [Here is a link](https://github.com/Azure/bicep-registry-modules) to the official GitHub repo containing the current listing of modules.  Microsoft admits the registry is fairly barebones right now, as they are just getting started at the time of this writing.
+  - Starting with Bicep v0.5.6 there is a default alias called `public` which points at Microsoft's official AVM (Azure Verified Modules).
+  - An example would be:  `br/public:avm/res/network/virtual-network:0.7`
+  - [Here is a link](https://github.com/Azure/bicep-registry-modules) to the official GitHub repo containing the currently published modules
 
 ```bicep
 module myModule3 'br:exampleregistry.azurecr.io/bicep/modules/storage:v1' = {
@@ -493,10 +486,11 @@ module myModule3 'br:exampleregistry.azurecr.io/bicep/modules/storage:v1' = {
 
 # 6. Outputs
 - Use Outputs when you need to return certain values from a deployment
-- Make sure you don't create outputs for sensitive data. Output values can be accessed by anyone who can view the deployment history. They're NOT appropriate for handling secrets
+- Make sure you don't create regular outputs for sensitive data. Output values can be accessed by anyone who can view the deployment history. They're NOT appropriate for handling secrets
+  - Outputs of type `string` and `object` support the `@secure` decorator starting with Bicep v0.18.4 or later.  This prevents the value from being logged or displayed in deployment history, Azure portal, or command-line outputs.
 - Instead of passing property values around through outputs, use the `existing` keyword to look up properties of resources that already exist. It's a best practice to look up keys from other resources in this way instead of passing them around through outputs. You'll always get the most up-to-date data
 - Outputs must set a specific data type
-- Outputs of type `string` and `object` support the `@secure` decorator starting with Bicep v0.18.4 or later.  This prevents the value from being logged or displayed in deployment history, Azure portal, or command-line outputs.
+- Starting with Bicep v0.35.1, the `@secure()` decorator is supported on `module` outputs. You can now output secure values from a child module and read them in a parent module
 
 ```bicep
 output myOutput1 int = myResource4.properties.maxNumberOfRecordSets
@@ -563,7 +557,6 @@ param parName4 = az.getSecret('subscriptionId', 'resourceGroupName', 'keyvaultNa
 ```
 
 Each `.bicepparam` file is tied to a particular `.bicep` file.  This relationship is defined by the `using` statement.  There are multiple options for defining the `using` statement, see below for more.
-- Support for ARM Templates, Bicep Registries, and Template Specs was added in Bicep v0.22.6
 
 ```bicep
 // a regular bicep file or arm template
@@ -585,7 +578,9 @@ using 'ts/aliasName:specName:tag'
 using none
 ```
 
-Starting with Bicep v0.21.1 you can define optional Variables in your `.bicepparam` files.
+Starting with Bicep v0.22.6, you can reference ARM Templates, Bicep Registries, and Template Specs in your `.bicepparam` files
+
+Starting with Bicep v0.21.1 you can optionally define Variables in your `.bicepparam` files.
 
 You can use expressions in the value of each parameter.
 - Use the `readEnvironmentVariable` function to pull a value from an environment variable.
@@ -740,7 +735,7 @@ func functionName (argName dataType, argName dataType, ...) functionDataType => 
 - The general format of a Lambda Expression is `lambdaVariable => lambdaExpression`.
 - [Read the docs](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-functions-lambda) for more information and examples for Lamba Expressions.
 
-Example: `filter()`
+#### Example: `filter()`
 
 ```bicep
 filter(inputArray, lambdaExpression)
@@ -771,7 +766,7 @@ someOutput = [
 ]
 ```
 
-Example: `groupBy()`
+#### Example: `groupBy()`
 
 ```bicep
 groupBy(inputArray, lambdaExpression)
@@ -790,7 +785,7 @@ someOutput = {
 }
 ```
 
-Example: `map()`
+#### Example: `map()`
 
 ```bicep
 map(inputArray, lambdaExpression)
@@ -826,7 +821,7 @@ someOutput2 = [
 ]
 ```
 
-Example: `mapValues()`
+#### Example: `mapValues()`
 
 ```bicep
 mapValues(inputObject, lambdaExpression)
@@ -848,7 +843,7 @@ someOutput = {
 }
 ```
 
-Example: `reduce()`
+#### Example: `reduce()`
 
 ```bicep
 reduce(inputArray, initialValue, lambdaExpression)
@@ -866,7 +861,7 @@ output someOutput int = reduce(inputArray, 0, (currentItem, nextItem) => current
 someOutput = 18
 ```
 
-Example: `sort()`
+#### Example: `sort()`
 
 ```bicep
 sort(inputArray, lambdaExpression)
@@ -908,7 +903,7 @@ someOutput = [
 ]
 ```
 
-Example: `toObject()`
+#### Example: `toObject()`
 
 ```bicep
 toObject(inputArray, lambdaExpression, [lambdaExpression])
@@ -953,7 +948,7 @@ someOutput2 = {
 ```
 
 ### Import / Export
-- First, you can specify the `@export()` decorator on any User-defined Type (`type`), User-defined Function (`func`), or Variable (`var`).  This marks the item as being exportable.
+- First, you must mark an item as being exportable.  You can specify the `@export()` decorator on any User-defined Type (`type`), User-defined Function (`func`), or Variable (`var`)
 - Then, you can use the `import` function, in a totally different Bicep file, to import that `type`, `func`, or `var` from the first Bicep file.
 - Support for Compile-time Imports is generally available as of Bicep v0.25.3
 
@@ -1010,10 +1005,10 @@ az provider show --namespace Microsoft.Batch --query "resourceTypes[?resourceTyp
 ## Templates for Deploying Bicep
 
 I've written a whole series of articles describing the different methods that can be used to deploy Bicep:
-- [Deploying with Az CLI](https://www.nathannellans.com/post/deploying-bicep-files-part-2-az-cli)
-- [Deploying with Az PowerShell Module](https://www.nathannellans.com/post/deploying-bicep-files-part-3-az-powershell-module)
-- [Deploying with Azure DevOps Pipelines](https://www.nathannellans.com/post/deploying-bicep-files-part-4-azure-devops-pipelines)
-- [Deploying with GitHub Actions](https://www.nathannellans.com/post/deploying-bicep-files-part-5-github-actions)
+- [Part 2 - Deploying with Az CLI](https://www.nathannellans.com/post/deploying-bicep-files-part-2-az-cli)
+- [Part 3 - Deploying with Az PowerShell Module](https://www.nathannellans.com/post/deploying-bicep-files-part-3-az-powershell-module)
+- [Part 4 - Deploying with Azure DevOps Pipelines](https://www.nathannellans.com/post/deploying-bicep-files-part-4-azure-devops-pipelines)
+- [Part 5 - Deploying with GitHub Actions](https://www.nathannellans.com/post/deploying-bicep-files-part-5-github-actions)
 
 I've also included some example files in this repo:
 - [Az CLI examples](./deployment-options/az-cli.sh)
@@ -1023,8 +1018,8 @@ I've also included some example files in this repo:
 
 ## Templates for Deployment Stacks
 
-Part 6 of my Bicep Deployment Series covers Deployment Stacks:
-- [Deployment Scopes & Deployment Stacks](https://www.nathannellans.com/post/deploying-bicep-files-part-6-scopes-stacks)
+Deployment Stacks are currently not featured in the guide you're reading, but I have blogged about them:
+- [Part 6 - Deployment Scopes & Deployment Stacks](https://www.nathannellans.com/post/deploying-bicep-files-part-6-scopes-stacks)
 
 I've also included some example files in this repo for Deployment Stacks:
 - [Az CLI examples](https://github.com/nnellans/bicep-guide/blob/main/deployment-options/az-cli-stacks.sh)
