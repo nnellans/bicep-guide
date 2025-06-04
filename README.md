@@ -227,7 +227,7 @@ this
 ```
 
 ### Custom User-Defined Types
-- Starting with Bicep v0.21.1, you can create your own user-defined types
+Starting with Bicep v0.21.1, you can create your own user-defined types
 
 ```bicep
 // This custom type defines a string, and sets 3 allowed values
@@ -457,6 +457,7 @@ module myModule1 '../someFile1.bicep' = {
 How to deploy a Module to a different scope using the `scope` parameter
 > [!NOTE]
 > This is how you can deploy resources to a scope that is different than your 'targetScope' parameter
+> 
 > More detailed information about scopes can be found on [my blog](https://www.nathannellans.com/post/deploying-bicep-files-part-6-scopes-stacks)
 
 ```bicep
