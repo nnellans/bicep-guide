@@ -280,6 +280,8 @@ Custom User-Defined Types support the following decorators:
 - `sealed()` for objects
 - `secure()` for strings and objects
 
+Also see: [Import / Export](README.md#import--export)
+
 ### Custom-tagged Union Data Type
 There is a special type of User-defined Type called Custom-tagged Union Data Type
 
@@ -335,6 +337,8 @@ resource exampleStorageAccount 'Microsoft.Storage/storageAccounts@2021-04-01' = 
   name: myVariable1
 }
 ```
+
+Also see: [Import / Export](README.md#import--export)
 
 ---
 
@@ -686,6 +690,8 @@ You can use expressions in the value of each parameter.
   - The `az.getSecret` function only supports params that have the `@secure()` decorator
   - By default, it will pull the latest version of the secret, unless you specify the `secretVersion` parameter
 
+Also see: [Import / Export](README.md#import--export)
+
 # Conditions (If)
 You can deploy a resource only if a certain condition is met, otherwise the resource will not be deployed
 
@@ -818,6 +824,7 @@ Bicep has a large assortment of functions that can be used in your template.  Ch
     - Parameters defined in the function can't have default values
   - Can't use the `reference` or `list` functions
 - [Read the docs](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/user-defined-functions) for more information on User-defined Functions
+- Also see: [Import / Export](README.md#import--export)
 
 ```bicep
 // create a user-defined function
