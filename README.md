@@ -104,6 +104,10 @@ resource exampleStorageAccount 'Microsoft.Storage/storageAccounts@2021-04-01' = 
 - The `secure` decorator can be used on `string` and `object` parameters. The value for a secure parameter isn't saved to the deployment history and isn't logged
   - Make sure you use this parameter in a location that expects a secure value, for example Tag values are stored in plain text, so do not use a secure string parameter in a Tag
   - Since these are secure, do NOT set a default value, as that will be stored in code
+- The `sealed` decorator can be used on `object` parameters
+  - By default, the `object` type in Bicep will let you pass any properties, even undefined ones. When doing this, Bicep will give a warning code `BCP089` and your deployment will continue.
+  - However, if you provide the `sealed` decorator and then try to pass undefined properties to an `object`, your deployment will now fail with an error.
+- The `discriminator` decorator can be used on parameters that reference user-defined types. More on this in the User-Defined Types section below
 
 ```bicep
 @minLength(1)
@@ -123,6 +127,9 @@ param myParameter4 string
   key2: 'value2'
 })
 param myParameter5 int
+
+@sealed()
+param myParameter6 int
 ```
 
 ## Bicep Data Types:
@@ -257,6 +264,16 @@ param someParamName {
 }[]
 ```
 
+Custom User-Defined Types support the following decorators:
+- `description()`
+- `discriminator()` for object types
+- `maxLength()` and `minLength()` for arrays and strings
+- `maxValue()` and `minValue()` for ints
+- `metadata()`
+- `sealed()` for objects
+- `secure()` for strings and objects
+
+### Custom-tagged Union Data Type
 There is a special type of User-defined Type called Custom-tagged Union Data Type
 
 - This represents a parameter value that can be one of several different types and is denoted by the `discriminator()` decorator
@@ -282,6 +299,12 @@ type secondUnionType = {
 // now define a parameter that can use either type based on the discriminator
 @discriminator('sharedProperty')
 param someParamName firstUnionType | secondUnionType
+```
+
+In the above example, if the value provided for this parameter includes `sharedProperty='numberOne'`, then the value will be validated against `firstUnionType`
+
+> [!NOTE]  
+> You can even do multiple levels of Custom-tagged Union Data Types by using the `discriminator()` decorator on your `type` definitions
 ```
 
 ---
@@ -326,6 +349,16 @@ resource myResource1 'Microsoft.Network/virtualWans@2021-02-01' = {
     myResource2
     myResource3
   ]
+}
+```
+
+## `onlyIfNotExists` Decorator
+Starting with Bicep v0.38.3 you can use a new decorator on your resources called `onlyIfNotExists()`.  As the name suggests, the resource will only be deployed if it does not already exist.
+
+```bicep
+@onlyIfNotExists()
+resource myResource 'Microsoft.Storage/storageAccounts@2019-06-01' = {
+  name: 'examplestorageaccount'
 }
 ```
 
@@ -469,6 +502,7 @@ More detailed information about scopes can be found on [my blog](https://www.nat
 - The `name` property is optional starting with Bicep v0.34.1
   - It becomes the name of the nested deployment resource in the generated ARM template
   - If no name is provided, a GUID will be generated as the name for the nested deployment resource
+- Starting with Bicep v0.35.1, the `secure()` decorator is also supported on `module` outputs. You can now output secure values from a child module and read them in a parent module
 
 ```bicep
 module myModule1 '../someFile1.bicep' = {
@@ -514,11 +548,20 @@ module myModule3 'br:exampleregistry.azurecr.io/bicep/modules/storage:v1' = {
 
 # 6. Outputs
 - Use Outputs when you need to return certain values from a deployment
-- Make sure you don't create regular outputs for sensitive data. Output values can be accessed by anyone who can view the deployment history. They're NOT appropriate for handling secrets
-  - Outputs of type `string` and `object` support the `@secure` decorator starting with Bicep v0.18.4 or later.  This prevents the value from being logged or displayed in deployment history, Azure portal, or command-line outputs.
+- Make sure you don't create regular outputs for sensitive data. Output values can be accessed by anyone who can view the deployment history. They're NOT appropriate for handling secrets. In this case use the `secure()` decorator
 - Instead of passing property values around through outputs, use the `existing` keyword to look up properties of resources that already exist. It's a best practice to look up keys from other resources in this way instead of passing them around through outputs. You'll always get the most up-to-date data
 - Outputs must set a specific data type
-- Starting with Bicep v0.35.1, the `@secure()` decorator is supported on `module` outputs. You can now output secure values from a child module and read them in a parent module
+- Outputs support the following decorators:
+  - `description()`
+  - `discriminator()` for object types
+  - `maxLength()` and `minLength()` for arrays and strings
+  - `maxValue()` and `minValue()` for ints
+  - `metadata()`
+  - `sealed()` for objects
+  - `secure()` for strings and objects
+    - Supported with Bicep v0.18.4 or later
+    - This prevents the value from being logged or displayed in deployment history, Azure portal, or command-line outputs.
+    - Starting with Bicep v0.35.1, the `secure()` decorator is also supported on `module` outputs. You can now output secure values from a child module and read them in a parent module
 
 ```bicep
 output myOutput1 int = myResource4.properties.maxNumberOfRecordSets
