@@ -550,6 +550,24 @@ How to use a Module (Bicep file) in a Registry
 module myModule3 'br:exampleregistry.azurecr.io/bicep/modules/storage:v1' = {
 ```
 
+How to add a User-Assigned Managed Identity to a Module
+- Requires Bicep v0.38.3 or newer
+- This makes the identity available within the module. For example, to access a Key Vault.
+- The [docs](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/modules#module-identity) still state that "this capability is intended for future use and is not yet supported by backend services."
+
+```bicep
+```param identityId string
+
+module myModule4 '../someFile4.bicep' = {
+  identity: {
+    type: 'UserAssigned'
+    userAssignedIdentities: {
+      '${identityId}': {}
+    }
+  }
+  ...
+}
+
 ---
 
 # 6. Outputs
@@ -780,6 +798,12 @@ The true or false values can be of any data type: string, integer, boolean, obje
 ## Functions
 
 Bicep has a large assortment of functions that can be used in your template.  Check out the [officials docs](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-functions) for more information about all of the available Functions and their instructions.
+
+### `deployer()` Function
+- Use the deployer function to capture information about the account being used for the deployment
+- `deployer().tenantId` is available starting with Bicep v0.32.4
+- `deployer().objectId` is available starting with Bicep v0.32.4
+- `deployer().userPrincipalName` is available starting with Bicep v0.36.1
 
 ### User-defined Functions
 - Support for User-defined Functions requires Bicep v0.26.54 or later
