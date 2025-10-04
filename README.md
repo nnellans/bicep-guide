@@ -301,11 +301,10 @@ type secondUnionType = {
 param someParamName firstUnionType | secondUnionType
 ```
 
-In the above example, if the value provided for this parameter includes `sharedProperty='numberOne'`, then the value will be validated against `firstUnionType`
+In the above example, if the value provided for this parameter includes `sharedProperty = 'numberOne'`, then the value will be validated against the custom type `firstUnionType`
 
 > [!NOTE]  
 > You can even do multiple levels of Custom-tagged Union Data Types by using the `discriminator()` decorator on your `type` definitions
-```
 
 ---
 
@@ -611,7 +610,7 @@ Instead of storing parameter values directly in your `.bicep` file, you can stor
 > [!NOTE]
 > This guide is only going to cover the newer `.bicepparam` files.  If you'd like to know more about the older `.json` parameter files, then please reference [the documentation](https://learn.microsoft.com/en-us/azure/azure-resource-manager/templates/parameter-files).
 
-Format of a `.bicepparam file`
+Format of a `.bicepparam` file
 ```bicep
 // the using statement
 using 'something'
