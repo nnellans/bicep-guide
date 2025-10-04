@@ -556,7 +556,7 @@ How to add a User-Assigned Managed Identity to a Module
 - The [docs](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/modules#module-identity) still state that "this capability is intended for future use and is not yet supported by backend services."
 
 ```bicep
-```param identityId string
+param identityId string
 
 module myModule4 '../someFile4.bicep' = {
   identity: {
@@ -567,6 +567,7 @@ module myModule4 '../someFile4.bicep' = {
   }
   ...
 }
+```
 
 ---
 
