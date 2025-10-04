@@ -1,6 +1,6 @@
 # Bicep Guide
 
-- Version: 1.1.0
+- Version: 1.2.0
 - Author:
   - Nathan Nellans
   - Email: me@nathannellans.com
@@ -21,11 +21,11 @@
 ---
 
 # Bicep Files & File Names
-Bicep files use a `.bicep` file extension and are written using their own custom domain-specific language (DSL).
+Bicep files use a `.bicep` file extension and are written using their own custom domain-specific language (DSL).  This guide will detail how to use the DSL to its full potential.
 
 If you're accustomed to Terraform, you will see that Bicep works differently when it comes to deploying code.  Terraform will combine every `.tf` file in the current directory and deploy them all at the same time.  Whereas Bicep will deploy one main `.bicep` file per deployment.  It is suggested to name this file `main.bicep`
 
-If you are storing parameters values in a separate parameters JSON file, it is common practice to use the name of the Bicep file and just add the word "parameters" like shown below.  If you are using the newer Bicep parameter format, then just use the name of the Bicep file with the extension of `.bicepparam`.  Support for `.bicepparam` files requires Bicep v0.18.4 or later.
+When using parameter files, Bicep supports 2 different formats.  If you are storing parameters values in the JSON file format, it is common practice to use the name of the Bicep file and just add the word "parameters" like shown below.  If you are using the newer Bicep parameter file format, then just use the name of the Bicep file with the extension of `.bicepparam`.  Support for `.bicepparam` files requires Bicep v0.18.4 or later.
 
 ```
 Bicep file:           main.bicep
@@ -95,7 +95,7 @@ resource exampleStorageAccount 'Microsoft.Storage/storageAccounts@2021-04-01' = 
 ## Parameter Decorators
 - Decorators are placed directly above the parameter definition
 - You can use more than one decorator for each parameter definition
-- It's good practice to specify the `minLength` and `maxLength` decorators for parameters that control resource naming. These limitations help avoid errors later during deployment
+- It's good practice to specify the `minLength` and `maxLength` decorators for parameters that control resource naming. These limitations help avoid errors later during deployment. For example, an Azure Storage Account must have a name that is between 3 and 24 characters long
   - For integers you can specify `minValue` and `maxValue` decorators, instead
 - It's good practice to specify the `description` decorator for all of your parameters. Try to make them helpful
 - The `allowed` decorator can be used to provide allowed values in an array. If the value doesn't match, then the deployment fails
@@ -104,6 +104,10 @@ resource exampleStorageAccount 'Microsoft.Storage/storageAccounts@2021-04-01' = 
 - The `secure` decorator can be used on `string` and `object` parameters. The value for a secure parameter isn't saved to the deployment history and isn't logged
   - Make sure you use this parameter in a location that expects a secure value, for example Tag values are stored in plain text, so do not use a secure string parameter in a Tag
   - Since these are secure, do NOT set a default value, as that will be stored in code
+- The `sealed` decorator can be used on `object` parameters
+  - By default, the `object` type in Bicep will let you pass any properties, even undefined ones. When doing this, Bicep will give a warning code `BCP089` and your deployment will continue.
+  - However, if you provide the `sealed` decorator and then try to pass undefined properties to an `object`, your deployment will now fail with an error.
+- The `discriminator` decorator can be used on parameters that reference user-defined types. More on this in the User-Defined Types section below
 
 ```bicep
 @minLength(1)
@@ -123,10 +127,20 @@ param myParameter4 string
   key2: 'value2'
 })
 param myParameter5 int
+
+@sealed()
+param myParameter6 int
 ```
 
 ## Bicep Data Types:
-Bicep data types include:  array, bool, int, object, string, and union types
+Bicep data types include:  any, array, bool, int, object, string, and union types
+
+### Any
+- Can be used anywhere type syntax is expected
+- Requires Bicep v0.38.3 or newer
+```bicep
+param someName any
+```
 
 ### Array
 - Arrays use square brackets:  `[ ]`
@@ -139,7 +153,7 @@ param someName array = [
 ]
 
 // Single-line arrays (use commas to separate values)
-// Requires Bicep 0.7.4 or newer
+// Requires Bicep v0.7.4 or newer
 param someName array = [ 'one', 'two', 'three' ]
 ```
 - In single-line, a comma after the last value is supported, but not required
@@ -172,7 +186,7 @@ param someName object = {
 }
 
 // Single-line objects (use commas to separate pairs)
-// Requires Bicep 0.7.4 or newer
+// Requires Bicep v0.7.4 or newer
 param someName object = { key: 'value', key: 'value' }
 ```
 - For single-line, a comma after the last pair is supported, but not required
@@ -257,6 +271,50 @@ param someParamName {
 }[]
 ```
 
+Custom User-Defined Types support the following decorators:
+- `description()`
+- `discriminator()` for object types
+- `maxLength()` and `minLength()` for arrays and strings
+- `maxValue()` and `minValue()` for ints
+- `metadata()`
+- `sealed()` for objects
+- `secure()` for strings and objects
+
+Also see: [Import / Export](README.md#import--export)
+
+### Custom-tagged Union Data Type
+There is a special type of User-defined Type called Custom-tagged Union Data Type
+
+- This represents a parameter value that can be one of several different types and is denoted by the `discriminator()` decorator
+- The `discriminator()` decorator takes a single parameter
+  - The parameter must be a shared property name that is common between all of the union types
+  - The value of this shared property must be unique in all of the union types
+
+```bicep
+// define the first custom union type, which uses 2 integer values
+type firstUnionType = {
+  sharedProperty: 'numberOne'
+  property1: int
+  property2: int
+}
+
+// define the second custom union type, which uses 3 string values
+type secondUnionType = {
+  sharedProperty = 'numberTwo'
+  propertyA: string
+  propertyB: string
+  propertyC: string
+
+// now define a parameter that can use either type based on the discriminator
+@discriminator('sharedProperty')
+param someParamName firstUnionType | secondUnionType
+```
+
+In the above example, if the value provided for this parameter includes `sharedProperty = 'numberOne'`, then the value will be validated against the custom type `firstUnionType`
+
+> [!NOTE]  
+> You can even do multiple levels of Custom-tagged Union Data Types by using the `discriminator()` decorator on your `type` definitions
+
 ---
 
 # 4. Variables
@@ -280,6 +338,8 @@ resource exampleStorageAccount 'Microsoft.Storage/storageAccounts@2021-04-01' = 
 }
 ```
 
+Also see: [Import / Export](README.md#import--export)
+
 ---
 
 # 5. Resources
@@ -299,6 +359,16 @@ resource myResource1 'Microsoft.Network/virtualWans@2021-02-01' = {
     myResource2
     myResource3
   ]
+}
+```
+
+## `onlyIfNotExists` Decorator
+Starting with Bicep v0.38.3 you can use a new decorator on your resources called `onlyIfNotExists()`.  As the name suggests, the resource will only be deployed if it does not already exist.
+
+```bicep
+@onlyIfNotExists()
+resource myResource 'Microsoft.Storage/storageAccounts@2019-06-01' = {
+  name: 'examplestorageaccount'
 }
 ```
 
@@ -442,6 +512,7 @@ More detailed information about scopes can be found on [my blog](https://www.nat
 - The `name` property is optional starting with Bicep v0.34.1
   - It becomes the name of the nested deployment resource in the generated ARM template
   - If no name is provided, a GUID will be generated as the name for the nested deployment resource
+- Starting with Bicep v0.35.1, the `secure()` decorator is also supported on `module` outputs. You can now output secure values from a child module and read them in a parent module
 
 ```bicep
 module myModule1 '../someFile1.bicep' = {
@@ -483,15 +554,43 @@ How to use a Module (Bicep file) in a Registry
 module myModule3 'br:exampleregistry.azurecr.io/bicep/modules/storage:v1' = {
 ```
 
+How to add a User-Assigned Managed Identity to a Module
+- Requires Bicep v0.38.3 or newer
+- This makes the identity available within the module. For example, to access a Key Vault.
+- The [docs](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/modules#module-identity) still state that "this capability is intended for future use and is not yet supported by backend services."
+
+```bicep
+param identityId string
+
+module myModule4 '../someFile4.bicep' = {
+  identity: {
+    type: 'UserAssigned'
+    userAssignedIdentities: {
+      '${identityId}': {}
+    }
+  }
+  ...
+}
+```
+
 ---
 
 # 6. Outputs
 - Use Outputs when you need to return certain values from a deployment
-- Make sure you don't create regular outputs for sensitive data. Output values can be accessed by anyone who can view the deployment history. They're NOT appropriate for handling secrets
-  - Outputs of type `string` and `object` support the `@secure` decorator starting with Bicep v0.18.4 or later.  This prevents the value from being logged or displayed in deployment history, Azure portal, or command-line outputs.
+- Make sure you don't create regular outputs for sensitive data. Output values can be accessed by anyone who can view the deployment history. They're NOT appropriate for handling secrets. In this case use the `secure()` decorator
 - Instead of passing property values around through outputs, use the `existing` keyword to look up properties of resources that already exist. It's a best practice to look up keys from other resources in this way instead of passing them around through outputs. You'll always get the most up-to-date data
 - Outputs must set a specific data type
-- Starting with Bicep v0.35.1, the `@secure()` decorator is supported on `module` outputs. You can now output secure values from a child module and read them in a parent module
+- Outputs support the following decorators:
+  - `description()`
+  - `discriminator()` for object types
+  - `maxLength()` and `minLength()` for arrays and strings
+  - `maxValue()` and `minValue()` for ints
+  - `metadata()`
+  - `sealed()` for objects
+  - `secure()` for strings and objects
+    - Supported with Bicep v0.18.4 or later
+    - This prevents the value from being logged or displayed in deployment history, Azure portal, or command-line outputs.
+    - Starting with Bicep v0.35.1, the `secure()` decorator is also supported on `module` outputs. You can now output secure values from a child module and read them in a parent module
 
 ```bicep
 output myOutput1 int = myResource4.properties.maxNumberOfRecordSets
@@ -541,7 +640,7 @@ Instead of storing parameter values directly in your `.bicep` file, you can stor
 > [!NOTE]
 > This guide is only going to cover the newer `.bicepparam` files.  If you'd like to know more about the older `.json` parameter files, then please reference [the documentation](https://learn.microsoft.com/en-us/azure/azure-resource-manager/templates/parameter-files).
 
-Format of a `.bicepparam file`
+Format of a `.bicepparam` file
 ```bicep
 // the using statement
 using 'something'
@@ -590,6 +689,8 @@ You can use expressions in the value of each parameter.
   - The `az.getSecret` function can only be used in a `param` value
   - The `az.getSecret` function only supports params that have the `@secure()` decorator
   - By default, it will pull the latest version of the secret, unless you specify the `secretVersion` parameter
+
+Also see: [Import / Export](README.md#import--export)
 
 # Conditions (If)
 You can deploy a resource only if a certain condition is met, otherwise the resource will not be deployed
@@ -705,6 +806,12 @@ The true or false values can be of any data type: string, integer, boolean, obje
 
 Bicep has a large assortment of functions that can be used in your template.  Check out the [officials docs](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-functions) for more information about all of the available Functions and their instructions.
 
+### `deployer()` Function
+- Use the deployer function to capture information about the account being used for the deployment
+- `deployer().tenantId` is available starting with Bicep v0.32.4
+- `deployer().objectId` is available starting with Bicep v0.32.4
+- `deployer().userPrincipalName` is available starting with Bicep v0.36.1
+
 ### User-defined Functions
 - Support for User-defined Functions requires Bicep v0.26.54 or later
 - Allows you to create and use your own custom functions within a Bicep file
@@ -717,6 +824,7 @@ Bicep has a large assortment of functions that can be used in your template.  Ch
     - Parameters defined in the function can't have default values
   - Can't use the `reference` or `list` functions
 - [Read the docs](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/user-defined-functions) for more information on User-defined Functions
+- Also see: [Import / Export](README.md#import--export)
 
 ```bicep
 // create a user-defined function
