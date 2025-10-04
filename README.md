@@ -21,11 +21,11 @@
 ---
 
 # Bicep Files & File Names
-Bicep files use a `.bicep` file extension and are written using their own custom domain-specific language (DSL).
+Bicep files use a `.bicep` file extension and are written using their own custom domain-specific language (DSL).  This guide will detail how to use the DSL to its full potential.
 
 If you're accustomed to Terraform, you will see that Bicep works differently when it comes to deploying code.  Terraform will combine every `.tf` file in the current directory and deploy them all at the same time.  Whereas Bicep will deploy one main `.bicep` file per deployment.  It is suggested to name this file `main.bicep`
 
-If you are storing parameters values in a separate parameters JSON file, it is common practice to use the name of the Bicep file and just add the word "parameters" like shown below.  If you are using the newer Bicep parameter format, then just use the name of the Bicep file with the extension of `.bicepparam`.  Support for `.bicepparam` files requires Bicep v0.18.4 or later.
+When using parameter files, Bicep supports 2 different formats.  If you are storing parameters values in the JSON file format, it is common practice to use the name of the Bicep file and just add the word "parameters" like shown below.  If you are using the newer Bicep parameter file format, then just use the name of the Bicep file with the extension of `.bicepparam`.  Support for `.bicepparam` files requires Bicep v0.18.4 or later.
 
 ```
 Bicep file:           main.bicep
@@ -95,7 +95,7 @@ resource exampleStorageAccount 'Microsoft.Storage/storageAccounts@2021-04-01' = 
 ## Parameter Decorators
 - Decorators are placed directly above the parameter definition
 - You can use more than one decorator for each parameter definition
-- It's good practice to specify the `minLength` and `maxLength` decorators for parameters that control resource naming. These limitations help avoid errors later during deployment
+- It's good practice to specify the `minLength` and `maxLength` decorators for parameters that control resource naming. These limitations help avoid errors later during deployment. For example, an Azure Storage Account must have a name that is between 3 and 24 characters long
   - For integers you can specify `minValue` and `maxValue` decorators, instead
 - It's good practice to specify the `description` decorator for all of your parameters. Try to make them helpful
 - The `allowed` decorator can be used to provide allowed values in an array. If the value doesn't match, then the deployment fails
@@ -255,6 +255,33 @@ param someParamName {
   name: string
   age: int
 }[]
+```
+
+There is a special type of User-defined Type called Custom-tagged Union Data Type
+
+- This represents a parameter value that can be one of several different types and is denoted by the `discriminator()` decorator
+- The `discriminator()` decorator takes a single parameter
+  - The parameter must be a shared property name that is common between all of the union types
+  - The value of this shared property must be unique in all of the union types
+
+```bicep
+// define the first custom union type, which uses 2 integer values
+type firstUnionType = {
+  sharedProperty: 'numberOne'
+  property1: int
+  property2: int
+}
+
+// define the second custom union type, which uses 3 string values
+type secondUnionType = {
+  sharedProperty = 'numberTwo'
+  propertyA: string
+  propertyB: string
+  propertyC: string
+
+// now define a parameter that can use either type based on the discriminator
+@discriminator('sharedProperty')
+param someParamName firstUnionType | secondUnionType
 ```
 
 ---
