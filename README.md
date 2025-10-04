@@ -133,7 +133,14 @@ param myParameter6 int
 ```
 
 ## Bicep Data Types:
-Bicep data types include:  array, bool, int, object, string, and union types
+Bicep data types include:  any, array, bool, int, object, string, and union types
+
+### Any
+- Can be used anywhere type syntax is expected
+- Requires Bicep v0.38.3 or newer
+```bicep
+param someName any
+```
 
 ### Array
 - Arrays use square brackets:  `[ ]`
@@ -146,7 +153,7 @@ param someName array = [
 ]
 
 // Single-line arrays (use commas to separate values)
-// Requires Bicep 0.7.4 or newer
+// Requires Bicep v0.7.4 or newer
 param someName array = [ 'one', 'two', 'three' ]
 ```
 - In single-line, a comma after the last value is supported, but not required
@@ -179,7 +186,7 @@ param someName object = {
 }
 
 // Single-line objects (use commas to separate pairs)
-// Requires Bicep 0.7.4 or newer
+// Requires Bicep v0.7.4 or newer
 param someName object = { key: 'value', key: 'value' }
 ```
 - For single-line, a comma after the last pair is supported, but not required
