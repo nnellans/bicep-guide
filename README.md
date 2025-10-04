@@ -1,6 +1,6 @@
 # Bicep Guide
 
-- Version: 1.1.0
+- Version: 1.2.0
 - Author:
   - Nathan Nellans
   - Email: me@nathannellans.com
