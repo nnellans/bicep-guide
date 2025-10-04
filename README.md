@@ -129,7 +129,7 @@ param myParameter4 string
 param myParameter5 int
 
 @sealed()
-param myParameter6 int
+param myParameter6 object
 ```
 
 ## Bicep Data Types:
