@@ -1,6 +1,6 @@
 # Bicep Guide
 
-- Version: 1.4.0
+- Version: 1.5.0
 - Author:
   - Nathan Nellans
   - Email: me@nathannellans.com
@@ -228,7 +228,6 @@ param exampleStringParameter string = 'example string'
 - Everything in-between is read verbatim
 - Escape characters are NOT not possible inside the string
 - You can NOT include `'''` (three single quotes) inside your multi-line string
-- Bicep does NOT support interpolation inside your multi-line string yet
 
 ```bicep
 param exampleMultilineParameter string = '''
@@ -237,6 +236,21 @@ this
     an
       idented
         example
+'''
+
+// Interpolation within multi-line strings
+// Supported starting with Bicep v0.40.2
+// Add a $ symbol before ''' if you want to support interpolation
+$'''
+this multi-line
+string contains
+some ${interpolated} variables
+'''
+
+// Add a double $$ before ''' If you want interpolation but still need to include a literal ${ ... }
+$$'''
+this is $${interpolated}
+this is not ${interpolated]
 '''
 ```
 
