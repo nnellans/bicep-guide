@@ -33,8 +33,66 @@ steps:
     environment: azureCloud | azureChinaCloud | azureGermanCloud | azureUSGovernment  # Optional. Default: azureCloud
     whatIfExcludeChangeTypes: <type,type,type>                                        # Optional. Comma-separated list of change type to exclude when running What-if
     validationLevel: provider | template | providerNoRbac                             # Optional. Only applies to 'validate' operation
-    
-    
+
+# Deploy Bicep to a Subscription
+- task: BicepDeploy@0
+  inputs:
+    type: deployment                                                                  # Optional. Default: deployment
+    operation: create | validate | what-if                                            # Optional. Default: create
+    scope: subscription
+    name: <deploymentName>                                                            # Optional. Default: auto-generated
+    description: <deploymentDescription>                                              # Optional
+    ConnectedServiceName: <serviceConnection>                                         # aka 'azureResourceManagerConnection'
+    subscriptionId: <subId>                                                           # ??? Needed only if your armResourceManager is scoped to Management Group
+    location: <region>                                                                # Location to store deployment metadata
+    templateFile: <main.bicep>
+    parametersFile: <main.bicepparam>                                                 # Optional
+    parameters: <inlineParameters>                                                    # Optional. Can be specified as a JSON or YAML object
+    bicepVersion: <version>                                                           # Optional. Default: latest version
+    maskedOutputs: <name,name,name>                                                   # Optional. Comma-separated list of Output names to be masked
+    environment: azureCloud | azureChinaCloud | azureGermanCloud | azureUSGovernment  # Optional. Default: azureCloud
+    whatIfExcludeChangeTypes: <type,type,type>                                        # Optional. Comma-separated list of change type to exclude when running What-if
+    validationLevel: provider | template | providerNoRbac                             # Optional. Only applies to 'validate' operation    
+
+# Deploy Bicep to a Management Group
+- task: BicepDeploy@0
+  inputs:
+    type: deployment                                                                  # Optional. Default: deployment
+    operation: create | validate | what-if                                            # Optional. Default: create
+    scope: managementGroup
+    name: <deploymentName>                                                            # Optional. Default: auto-generated
+    description: <deploymentDescription>                                              # Optional
+    ConnectedServiceName: <serviceConnection>                                         # aka 'azureResourceManagerConnection'
+    location: <region>                                                                # Location to store deployment metadata
+    managementGroupId: <mgId>
+    templateFile: <main.bicep>
+    parametersFile: <main.bicepparam>                                                 # Optional
+    parameters: <inlineParameters>                                                    # Optional. Can be specified as a JSON or YAML object
+    bicepVersion: <version>                                                           # Optional. Default: latest version
+    maskedOutputs: <name,name,name>                                                   # Optional. Comma-separated list of Output names to be masked
+    environment: azureCloud | azureChinaCloud | azureGermanCloud | azureUSGovernment  # Optional. Default: azureCloud
+    whatIfExcludeChangeTypes: <type,type,type>                                        # Optional. Comma-separated list of change type to exclude when running What-if
+    validationLevel: provider | template | providerNoRbac                             # Optional. Only applies to 'validate' operation
+
+# Deploy Bicep to a Tenant
+- task: BicepDeploy@0
+  inputs:
+    type: deployment                                                                  # Optional. Default: deployment
+    operation: create | validate | what-if                                            # Optional. Default: create
+    scope: tenant
+    name: <deploymentName>                                                            # Optional. Default: auto-generated
+    description: <deploymentDescription>                                              # Optional
+    ConnectedServiceName: <serviceConnection>                                         # aka 'azureResourceManagerConnection'
+    location: <region>                                                                # Location to store deployment metadata
+    tenantId: <tenantId>
+    templateFile: <main.bicep>
+    parametersFile: <main.bicepparam>                                                 # Optional
+    parameters: <inlineParameters>                                                    # Optional. Can be specified as a JSON or YAML object
+    bicepVersion: <version>                                                           # Optional. Default: latest version
+    maskedOutputs: <name,name,name>                                                   # Optional. Comma-separated list of Output names to be masked
+    environment: azureCloud | azureChinaCloud | azureGermanCloud | azureUSGovernment  # Optional. Default: azureCloud
+    whatIfExcludeChangeTypes: <type,type,type>                                        # Optional. Comma-separated list of change type to exclude when running What-if
+    validationLevel: provider | template | providerNoRbac                             # Optional. Only applies to 'validate' operation
 
 #-------------------------------------------------------------
 # Old method using task AzureResourceManagerTemplateDeployment
