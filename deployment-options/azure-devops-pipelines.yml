@@ -103,7 +103,7 @@ steps:
   inputs:
     deploymentScope: Resource Group
     ConnectedServiceName: <serviceConnection>            # aka 'azureResourceManagerConnection'
-    subscriptionName: <subName>                          # aka 'subscriptionId'. Optional. Needed only if your armResourceManager is scoped to Management Group
+    subscriptionName: <subName>                          # aka 'subscriptionId'. Optional. Needed only if your ConnectedServiceName is scoped to Management Group
     action: Create Or Update Resource Group | DeleteRG   # Optional. Default: Create or Update Resource Group
     resourceGroupName: <rgName>
     location: <region>
@@ -121,7 +121,7 @@ steps:
   inputs:
     deploymentScope: Subscription
     ConnectedServiceName: <serviceConnection>          # aka 'azureResourceManagerConnection'
-    subscriptionName: <subName>                        # aka 'subscriptionId'. Optional. Needed only if your armResourceManager is scoped to Management Group
+    subscriptionName: <subName>                        # aka 'subscriptionId'. Optional. Needed only if your ConnectedServiceName is scoped to Management Group
     location: <region>
     deploymentMode: Incremental | Validation           # Optional. Default: Incremental
     deploymentName: <name>                             # Optional. Default: an automatically generated, unique value
