@@ -26,7 +26,7 @@ steps:
     resourceGroupName: <rgName>
     location: <region>                                                                # ??? Not required for RG scope?
     templateFile: <main.bicep>
-    parametersFile: <main.bicepparam>                                                 # Optional
+    parametersFile: <main.bicepparam>                                                 # Marked as optional, but get an error if omitted: ##[error]Unsupported parameters file type: /home/vsts/work/1/s
     parameters: <inlineParameters>                                                    # Optional. Can be specified as a JSON or YAML object
     bicepVersion: <version>                                                           # Optional. Default: latest version
     maskedOutputs: <name,name,name>                                                   # Optional. Comma-separated list of Output names to be masked
@@ -46,7 +46,7 @@ steps:
     subscriptionId: <subId>                                                           # Required even if your ConnectedServiceName is scoped to Subscription
     location: <region>                                                                # Location to store deployment metadata
     templateFile: <main.bicep>
-    parametersFile: <main.bicepparam>                                                 # Optional
+    parametersFile: <main.bicepparam>                                                 # Marked as optional, but get an error if omitted: ##[error]Unsupported parameters file type: /home/vsts/work/1/s
     parameters: <inlineParameters>                                                    # Optional. Can be specified as a JSON or YAML object
     bicepVersion: <version>                                                           # Optional. Default: latest version
     maskedOutputs: <name,name,name>                                                   # Optional. Comma-separated list of Output names to be masked
