@@ -43,7 +43,7 @@ steps:
     name: <deploymentName>                                                            # Optional. Default: auto-generated
     description: <deploymentDescription>                                              # Optional
     ConnectedServiceName: <serviceConnection>                                         # aka 'azureResourceManagerConnection'
-    subscriptionId: <subId>                                                           # ??? Needed only if your armResourceManager is scoped to Management Group
+    subscriptionId: <subId>                                                           # Required even if your ConnectedServiceName is scoped to Subscription
     location: <region>                                                                # Location to store deployment metadata
     templateFile: <main.bicep>
     parametersFile: <main.bicepparam>                                                 # Optional
