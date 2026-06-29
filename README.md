@@ -410,6 +410,16 @@ resource myResource3 'Microsoft.Storage/storageAccounts@2019-06-01' existing = {
 }
 ```
 
+## `nullIfNotFound` Decorator
+Starting with Bicep v0.44.1 you can use a new decorator on your 'existing' resources called `nullIfNotFound()`.  If the given resource does not exist at deployment time then this will return `null` instead of failing.
+
+```bicep
+@nullIfNotFound()
+resource myResource 'Microsoft.Storage/storageAccounts@2019-06-01' existing = {
+  name: 'examplestorageaccount'
+}
+```
+
 ## Child Resources:
 - Child resources are resources that exist only within the context of another resource
 - Each 'parent' resource accepts only certain 'child' resources.  Check out the [Bicep Resource Reference](https://docs.microsoft.com/en-us/azure/templates/) for the supported parent/child relationships.
