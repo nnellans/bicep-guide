@@ -410,6 +410,16 @@ resource myResource3 'Microsoft.Storage/storageAccounts@2019-06-01' existing = {
 }
 ```
 
+## `nullIfNotFound` Decorator
+Starting with Bicep v0.44.1 you can use a new decorator on your 'existing' resources called `nullIfNotFound()`.  If the given resource does not exist at deployment time then this will return `null` instead of failing.
+
+```bicep
+@nullIfNotFound()
+resource myResource 'Microsoft.Storage/storageAccounts@2019-06-01' existing = {
+  name: 'examplestorageaccount'
+}
+```
+
 ## Child Resources:
 - Child resources are resources that exist only within the context of another resource
 - Each 'parent' resource accepts only certain 'child' resources.  Check out the [Bicep Resource Reference](https://docs.microsoft.com/en-us/azure/templates/) for the supported parent/child relationships.
@@ -659,10 +669,10 @@ Instead of storing parameter values directly in your `.bicep` file, you can stor
 
 Format of a `.bicepparam` file
 ```bicep
-// the using statement
+// the using statement, see more below
 using 'something'
 
-// optional variables
+// optional variables, supported with Bicep v0.21.1 or later
 var varName1 = value1
 var varName2 = value2
 
@@ -676,18 +686,20 @@ param parName4 = az.getSecret('subscriptionId', 'resourceGroupName', 'keyvaultNa
 Each `.bicepparam` file is tied to a particular `.bicep` file.  This relationship is defined by the `using` statement.  There are multiple options for defining the `using` statement, see below for more.
 
 ```bicep
-// a regular bicep file or arm template
+// a regular bicep file
 using 'path/to/file.bicep'
+
+// a regular arm template, supported with Bicep v0.22.6 or later
 using 'path/to/file.json'
 
-// a module from the public bicep registry
+// a module from the public bicep registry, supported with Bicep v0.22.6 or later
 using 'br/public:path:tag'
 
-// a module from a private bicep registry
+// a module from a private bicep registry, supported with Bicep v0.22.6 or later
 using 'br:registryName.azurecr.io/bicep/path:tag'
 using 'br/aliasName:path:tag'
 
-// a template spec
+// a template spec, supported with with Bicep v0.22.6 or later
 using 'ts:subscriptionId/resourceGroupName/specName:tag'
 using 'ts/aliasName:specName:tag'
 
@@ -695,9 +707,28 @@ using 'ts/aliasName:specName:tag'
 using none
 ```
 
-Starting with Bicep v0.22.6, you can reference ARM Templates, Bicep Registries, and Template Specs in your `.bicepparam` files
+### Extendable Parameters
 
-Starting with Bicep v0.21.1 you can optionally define Variables in your `.bicepparam` files.
+Allows you to reuse parameters from one `.bicepparam` file in another `.bicepparam` file
+- In the "child" param file, use the `extends` keyword to point at the "parent" param file which contains the parameters you want to use
+- In the `child.bicepparam` you would include a line like this: `extends parent.bicepparam`
+- Any duplicate parameter names will use the value from the child parameter file
+- Supported with Bicep v0.44.1 or later
+
+```bicep
+// file 1: parent.bicepparam
+using none
+param parName1 = value1
+param parName2 = value2
+param parName3 = value3
+
+// file 2: child.bicepparam
+using 'someFile.bicep'
+extends parent.bicepparam
+// this file can now use any param defined in the parent
+```
+
+### Parameter Expressions
 
 You can use expressions in the value of each parameter.
 - Use the `readEnvironmentVariable` function to pull a value from an environment variable.
@@ -707,7 +738,8 @@ You can use expressions in the value of each parameter.
   - The `az.getSecret` function only supports params that have the `@secure()` decorator
   - By default, it will pull the latest version of the secret, unless you specify the `secretVersion` parameter
 
-Also see: [Import / Export](README.md#import--export)
+### Also see
+[Import / Export](README.md#import--export)
 
 # Conditions (If)
 You can deploy a resource only if a certain condition is met, otherwise the resource will not be deployed
@@ -823,11 +855,51 @@ The true or false values can be of any data type: string, integer, boolean, obje
 
 Bicep has a large assortment of functions that can be used in your template.  Check out the [officials docs](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-functions) for more information about all of the available Functions and their instructions.
 
+There's no way I could highlight every Bicep function in this guide.  So, the ones you see below are simply the ones I find the most helpful and useful.
+
 ### `deployer()` Function
-- Use the deployer function to capture information about the account being used for the deployment
+- Use the deployer function to return information about the account being used for the deployment
 - `deployer().tenantId` is available starting with Bicep v0.32.4
 - `deployer().objectId` is available starting with Bicep v0.32.4
 - `deployer().userPrincipalName` is available starting with Bicep v0.36.1
+
+### 'this' Functions
+- The 'this' namespace has 2 unique functions available: `this.exists()` and `this.existingResource()`
+- These functions are used within a resource definition, and they give you information about said resource
+- `this.exists()`
+  - Tells you whether the resource already exists or not
+  - Returns a `bool` value: `true` if the resource exists, and `false` if it does not
+- `this.existingResource()`
+  - Returns an `object` value, giving you all available information about the resource
+  - Then you can access all nested properties of the resource by way of the `object` value
+  - Returns `null` if the resource does not exist
+- Both of these functions are available starting with Bicep v0.44.1
+
+```bicep
+resource symbolicName 'Microsoft.Storage/storageAccounts/fileServices@2021-04-01' = {
+  name: 'example'
+  properties: {
+    property1: this.exists() ? 'resource exists' : 'resource does not exist'
+    property2: this.existingResource().properties.property2
+    property3: this.existingResource().tags
+  }
+}
+```
+
+### `roleDefinitions()` Function
+- Let's you easily look up the GUID of a built-in or custom role definition
+- Returns an `object` value which includes `id` and `roleDefinitionId` properties
+- Available starting with Bicep v0.42.1
+
+```bicep
+resource roleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: someRoleAssignmentName
+  properties: {
+    roleDefinitionId: roleDefinitions('Owner').id
+    principalId: somePrincipalId
+  }
+}
+```
 
 ### User-defined Functions
 - Support for User-defined Functions requires Bicep v0.26.54 or later
