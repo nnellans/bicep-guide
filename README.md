@@ -379,7 +379,7 @@ resource myResource1 'Microsoft.Network/virtualWans@2021-02-01' = {
 }
 ```
 
-## `onlyIfNotExists` Decorator
+### `onlyIfNotExists` Decorator
 Starting with Bicep v0.38.3 you can use a new decorator on your resources called `onlyIfNotExists()`.  As the name suggests, the resource will only be deployed if it does not already exist.
 
 ```bicep
@@ -410,7 +410,7 @@ resource myResource3 'Microsoft.Storage/storageAccounts@2019-06-01' existing = {
 }
 ```
 
-## `nullIfNotFound` Decorator
+### `nullIfNotFound` Decorator
 Starting with Bicep v0.44.1 you can use a new decorator on your 'existing' resources called `nullIfNotFound()`.  If the given resource does not exist at deployment time then this will return `null` instead of failing.
 
 ```bicep
