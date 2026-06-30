@@ -855,8 +855,10 @@ The true or false values can be of any data type: string, integer, boolean, obje
 
 Bicep has a large assortment of functions that can be used in your template.  Check out the [officials docs](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-functions) for more information about all of the available Functions and their instructions.
 
+There's no way I could highlight every Bicep function in this guide.  So, the ones you see below are simply the ones I find the most helpful and useful.
+
 ### `deployer()` Function
-- Use the deployer function to capture information about the account being used for the deployment
+- Use the deployer function to return information about the account being used for the deployment
 - `deployer().tenantId` is available starting with Bicep v0.32.4
 - `deployer().objectId` is available starting with Bicep v0.32.4
 - `deployer().userPrincipalName` is available starting with Bicep v0.36.1
@@ -864,9 +866,9 @@ Bicep has a large assortment of functions that can be used in your template.  Ch
 ### 'this' Functions
 - The 'this' namespace has 2 unique functions available: `this.exists()` and `this.existingResource()`
 - These functions are used within a resource definition, and they give you information about said resource
-- `this.exists()` function
+- `this.exists()`
   - Tells you whether the resource already exists or not
-  - Returns a `bool` value: `true` if the resource exists, and `False` if it does not
+  - Returns a `bool` value: `true` if the resource exists, and `false` if it does not
 - `this.existingResource()`
   - Returns an `object` value, giving you all available information about the resource
   - Then you can access all nested properties of the resource by way of the `object` value
@@ -880,6 +882,21 @@ resource symbolicName 'Microsoft.Storage/storageAccounts/fileServices@2021-04-01
     property1: this.exists() ? 'resource exists' : 'resource does not exist'
     property2: this.existingResource().properties.property2
     property3: this.existingResource().tags
+  }
+}
+```
+
+### `roleDefinitions()` Function
+- Let's you easily look up the GUID of a built-in or custom role definition
+- Returns an `object` value which includes `id` and `roleDefinitionId` properties
+- Available starting with Bicep v0.42.1
+
+```bicep
+resource roleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: someRoleAssignmentName
+  properties: {
+    roleDefinitionId: roleDefinitions('Owner').id
+    principalId: somePrincipalId
   }
 }
 ```
