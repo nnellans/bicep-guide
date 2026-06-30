@@ -11,8 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-      - uses: Azure/login@v2         # First, login to Azure with an account that has permissions to do deployments
-      - uses: actions/checkout@v4    # Second, checkout the repo where the bicep and bicepparam files are located
+      - uses: Azure/login@v3         # First, login to Azure with an account that has permissions to do deployments
+      - uses: actions/checkout@v7    # Second, checkout the repo where the bicep and bicepparam files are located
       
       # Deployment Stacks at the Resource Group scope
       - uses: Azure/bicep-deploy@v2
