@@ -861,6 +861,29 @@ Bicep has a large assortment of functions that can be used in your template.  Ch
 - `deployer().objectId` is available starting with Bicep v0.32.4
 - `deployer().userPrincipalName` is available starting with Bicep v0.36.1
 
+### 'this' Functions
+- The 'this' namespace has 2 unique functions available: `this.exists()` and `this.existingResource()`
+- These functions are used within a resource definition, and they give you information about said resource
+- `this.exists()` function
+  - Tells you whether the resource already exists or not
+  - Returns a `bool` value: `true` if the resource exists, and `False` if it does not
+- `this.existingResource()`
+  - Returns an `object` value, giving you all available information about the resource
+  - Then you can access all nested properties of the resource by way of the `object` value
+  - Returns `null` if the resource does not exist
+- Both of these functions are available starting with Bicep v0.44.1
+
+```bicep
+resource symbolicName 'Microsoft.Storage/storageAccounts/fileServices@2021-04-01' = {
+  name: 'example'
+  properties: {
+    property1: this.exists() ? 'resource exists' : 'resource does not exist'
+    property2: this.existingResource().properties.property2
+    property3: this.existingResource().tags
+  }
+}
+```
+
 ### User-defined Functions
 - Support for User-defined Functions requires Bicep v0.26.54 or later
 - Allows you to create and use your own custom functions within a Bicep file
