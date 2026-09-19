@@ -1,6 +1,6 @@
 # Bicep Guide
 
-- Version: 1.6.0
+- Version: 1.7.0
 - Author:
   - Nathan Nellans
   - Email: me@nathannellans.com
@@ -388,6 +388,19 @@ resource myResource 'Microsoft.Storage/storageAccounts@2019-06-01' = {
   name: 'examplestorageaccount'
 }
 ```
+
+### `retryOn` Decorator
+Starting with Bicep v0.45.6 you can use a new decorator on your resources called `retryOn()`.  This allows you to retry a resource deployment when specific error codes are returned.
+
+```bicep
+@retryOn([errorCodes], retries)
+resource myResource 'Microsoft.Storage/storageAccounts@2019-06-01' = {
+  name: 'examplestorageaccount'
+}
+```
+
+* The first parameter for the decorator is an array of strings which lists one or more error codes that should trigger a retry.  Some examples are `'ResourceNotFound'` and `'ServerError'`
+* The second parameter for the decorator is optional.  It is an integer which defines the max number of retries.  The default is 30, and the max is also 30.
 
 ## Existing Resources:
 To reference a resource that already exists, use the `existing` keyword in a resource declaration
