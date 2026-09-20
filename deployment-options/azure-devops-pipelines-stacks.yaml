@@ -1,0 +1,91 @@
+# For more information go to:
+# https://www.nathannellans.com/post/deploying-bicep-files-part-6-scopes-stacks
+
+trigger: none
+pr: none
+
+pool: 
+  vmImage: ubuntu-latest
+
+steps:
+
+# Deployment Stacks at the Resource Group scope
+- task: BicepDeploy@0
+  inputs:
+    ConnectedServiceName: <serviceConnection>                                         # aka 'azureResourceManagerConnection'
+    bicepVersion: <version>                                                           # Optional. Default: latest
+    type: deploymentStack
+    environment: azureCloud | azureChinaCloud | azureGermanCloud | azureUSGovernment  # Optional. Default: azureCloud
+    scope: resourceGroup                                                              # Optional. Default: resourceGroup
+    subscriptionId: <subId>
+    resourceGroupName: <rgName>
+    operation: create | validate | delete                                             # Optional. Default: create
+    name: <stackName>                                                                 # Optional ????. Default: ????
+    description: <stackDescription>                                                   # Optional ????
+    tags: <stackTags>                                                                 # Optional. JSON string, or YAML Object
+    templateFile: <main.bicep>
+    parametersFile: <main.bicepparam>                                                 # Optional
+    parameters: <params>                                                              # Optional override parameters. JSON string, or YAML object
+    maskedOutputs: <output>,<output>,<output>                                         # Optional
+    actionOnUnmanageResources: delete | detach                                        # Optional. Default: detach
+    actionOnUnmanageResourceGroups: delete | detach
+    actionOnUnmanageManagementGroups: delete | detach
+    denySettingsMode: none | denyDelete | denyWriteAndDelete                          # Optional. Default: none
+    denySettingsExcludedActions: <action>,<action>,<action>
+    denySettingsExcludedPrincipals: <principal>,<principal>,<principal>
+    denySettingsApplyToChildScopes: true | false                                      # Optional. Default: false
+    bypassStackOutOfSyncError: true | false                                           # Optional. Default: false
+
+# Deployment Stacks at the Subscription scope
+- task: BicepDeploy@0
+  inputs:
+    ConnectedServiceName: <serviceConnection>                                         # aka 'azureResourceManagerConnection'
+    bicepVersion: <version>                                                           # Optional. Default: latest
+    type: deploymentStack
+    environment: azureCloud | azureChinaCloud | azureGermanCloud | azureUSGovernment  # Optional. Default: azureCloud
+    scope: subscription
+    subscriptionId: <subId>
+    operation: create | validate | delete                                             # Optional. Default: create
+    name: <stackName>                                                                 # Optional ????. Default: ????
+    description: <stackDescription>                                                   # Optional ????
+    tags: <stackTags>                                                                 # Optional. JSON string, or YAML Object
+    location: <region>
+    templateFile: <main.bicep>
+    parametersFile: <main.bicepparam>                                                 # Optional
+    parameters: <params>                                                              # Optional override parameters. JSON string, or YAML object
+    maskedOutputs: <output>,<output>,<output>                                         # Optional
+    actionOnUnmanageResources: delete | detach                                        # Optional. Default: detach
+    actionOnUnmanageResourceGroups: delete | detach
+    actionOnUnmanageManagementGroups: delete | detach
+    denySettingsMode: none | denyDelete | denyWriteAndDelete                          # Optional. Default: none
+    denySettingsExcludedActions: <action>,<action>,<action>
+    denySettingsExcludedPrincipals: <principal>,<principal>,<principal>
+    denySettingsApplyToChildScopes: true | false                                      # Optional. Default: false
+    bypassStackOutOfSyncError: true | false                                           # Optional. Default: false
+
+# Deployment Stacks at the Management Group scope
+- task: BicepDeploy@0
+  inputs:
+    ConnectedServiceName: <serviceConnection>                                         # aka 'azureResourceManagerConnection'
+    bicepVersion: <version>                                                           # Optional. Default: latest
+    type: deploymentStack
+    environment: azureCloud | azureChinaCloud | azureGermanCloud | azureUSGovernment  # Optional. Default: azureCloud
+    scope: managementGroup
+    managementGroupId: <mgId>
+    operation: create | validate | delete                                             # Optional. Default: create
+    name: <stackName>                                                                 # Optional ????. Default: ????
+    description: <stackDescription>                                                   # Optional ????
+    tags: <stackTags>                                                                 # Optional. JSON string, or YAML Object
+    location: <region>
+    templateFile: <main.bicep>
+    parametersFile: <main.bicepparam>                                                 # Optional
+    parameters: <params>                                                              # Optional override parameters. JSON string, or YAML object
+    maskedOutputs: <output>,<output>,<output>                                         # Optional
+    actionOnUnmanageResources: delete | detach                                        # Optional. Default: detach
+    actionOnUnmanageResourceGroups: delete | detach
+    actionOnUnmanageManagementGroups: delete | detach
+    denySettingsMode: none | denyDelete | denyWriteAndDelete                          # Optional. Default: none
+    denySettingsExcludedActions: <action>,<action>,<action>
+    denySettingsExcludedPrincipals: <principal>,<principal>,<principal>
+    denySettingsApplyToChildScopes: true | false                                      # Optional. Default: false
+    bypassStackOutOfSyncError: true | false                                           # Optional. Default: false
