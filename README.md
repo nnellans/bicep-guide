@@ -1,6 +1,6 @@
 # Bicep Guide
 
-- Version: 1.7.0
+- Version: 1.7.1
 - Author:
   - Nathan Nellans
   - Email: me@nathannellans.com
@@ -1220,6 +1220,7 @@ I've written a whole series of articles describing the different methods that ca
 - [Part 3 - Deploying with Az PowerShell Module](https://www.nathannellans.com/post/deploying-bicep-files-part-3-az-powershell-module)
 - [Part 4 - Deploying with Azure DevOps Pipelines](https://www.nathannellans.com/post/deploying-bicep-files-part-4-azure-devops-pipelines)
 - [Part 5 - Deploying with GitHub Actions](https://www.nathannellans.com/post/deploying-bicep-files-part-5-github-actions)
+- [Part 7 - Deploying with Azure DevOps Pipelines - BicepDeploy Task](https://www.nathannellans.com/post/deploying-bicep-files-part-7-azure-devops-pipelines-bicepdeploy-task)
 
 I've also included some example files in this repo:
 - [Az CLI examples](./deployment-options/az-cli.sh)
@@ -1236,6 +1237,7 @@ I've also included some example files in this repo for Deployment Stacks:
 - [Az CLI examples](https://github.com/nnellans/bicep-guide/blob/main/deployment-options/az-cli-stacks.sh)
 - [Az PowerShell Module examples](https://github.com/nnellans/bicep-guide/blob/main/deployment-options/az-powershell-module-stacks.ps1)
 - [GitHub Actions examples](https://github.com/nnellans/bicep-guide/blob/main/deployment-options/github-actions-stacks.yml)
+- [Azure DevOps Pipelines examples](https://github.com/nnellans/bicep-guide/blob/main/deployment-options/azure-devops-pipelines-stacks.yaml)
 
 ---
 
